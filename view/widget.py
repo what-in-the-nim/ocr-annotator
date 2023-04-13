@@ -1,9 +1,10 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QLineEdit, QGroupBox, QHBoxLayout, QSpinBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QLineEdit, QGroupBox, QHBoxLayout, QSpinBox, QGridLayout
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot, QEvent
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 import numpy as np
 import cv2
 import logging
+from PIL import Image
 
 
 logger = logging.getLogger(__name__)
@@ -19,19 +20,21 @@ class ImageWidget(QLabel):
 
         logger.info("Image widget initialized")
 
-    def set_image(self, image: np.ndarray) -> None:
+    def set_image(self, image: Image.Image) -> None:
         """Display the image in the imageWidget."""
         logger.info("Image widget received image")
         image = self.resize_image(image)
-        height, width, _ = image.shape
 
-        qImg = QImage(image.data, width, height, QImage.Format.Format_RGB888)
+        # Create a QImage from the padded image data
+        width, height = image.size
+
+        qImg = QImage(image.tobytes(), width, height, 3 * width, QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(qImg)
         self.setPixmap(pixmap)
 
-    def resize_image(self, image: np.ndarray) -> np.ndarray:
+    def resize_image(self, image: Image.Image) -> np.ndarray:
         """Resize the image to fit the imageWidget."""
-        height, width, _ = image.shape
+        width, height = image.size
         container_width, container_height = self.width(), self.height()
 
         # Calculate the aspect ratio of the image
@@ -47,7 +50,7 @@ class ImageWidget(QLabel):
             target_width = int(target_height * aspect_ratio)
 
         # Resize the image to the target size
-        resized_image = cv2.resize(image, (target_width, target_height))
+        resized_image = image.resize((target_width, target_height))
 
         return resized_image
 
@@ -58,14 +61,14 @@ class TextWidget(QGroupBox):
 
     def __init__(self):
         super().__init__()
-        self.setTitle("Label")
+        self.setTitle("Tools")
 
-        layout = QVBoxLayout()
+        layout = QGridLayout()
         self.setLayout(layout)
 
         # Total amount label
+        image_label = QLabel(f"Image: ")
         h_boxlayout = QHBoxLayout()
-        self.image_label = QLabel(f"Image: ")
         self.index_spin_box = QSpinBox()
         self.index_spin_box.setValue(0)
         self.index_spin_box.setMinimum(0)
@@ -73,34 +76,36 @@ class TextWidget(QGroupBox):
         self.index_spin_box.valueChanged.connect(self.send_change_index_request)
 
         self.total_amount_label = QLabel("/0")
-        h_boxlayout.addWidget(self.image_label)
         h_boxlayout.addWidget(self.index_spin_box)
         h_boxlayout.addWidget(self.total_amount_label)
         h_boxlayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        layout.addLayout(h_boxlayout)
+        layout.addWidget(image_label, 0, 0, 1, 1)
+        layout.addLayout(h_boxlayout, 0, 1, 1, 1)
 
         # Path label
+        path_label = QLabel("Path: ")
         h_boxlayout = QHBoxLayout()
-        self.path_label = QLabel("Path: ")
         self.path_edit = QLineEdit()
         self.path_edit.setReadOnly(True)
         self.path_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        h_boxlayout.addWidget(self.path_label)
         h_boxlayout.addWidget(self.path_edit)
-        layout.addLayout(h_boxlayout)
+
+        layout.addWidget(path_label, 1, 0, 1, -1)
+        layout.addLayout(h_boxlayout, 1, 1, 1, -1)
 
         # Label line edit
-        h_boxlayout = QHBoxLayout()
         line_label = QLabel("Label:")
+        h_boxlayout = QHBoxLayout()
         self.line_edit = QLineEdit()
         self.line_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         # Send the change_text_request when the user presses Enter
         self.line_edit.returnPressed.connect(self.send_change_text_request)
         # Deselect the textWidget when the user presses Enter
         self.line_edit.returnPressed.connect(self.line_edit.clearFocus)
-        h_boxlayout.addWidget(line_label)
         h_boxlayout.addWidget(self.line_edit)
-        layout.addLayout(h_boxlayout)
+
+        layout.addWidget(line_label, 2, 0, 1, -1)
+        layout.addLayout(h_boxlayout, 2, 1, 1, -1)
 
     def initialize_spinbox(self, max_value: int):
         self.index_spin_box.setMaximum(max_value)

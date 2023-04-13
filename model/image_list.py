@@ -1,5 +1,5 @@
-import cv2
 import pandas as pd
+from PIL import Image
 from datetime import datetime
 
 class ImageListModel:
@@ -13,7 +13,7 @@ class ImageListModel:
 
     @property
     def image(self) -> None:
-        return cv2.imread(self.path)
+        return Image.open(self.path).convert("RGB")
 
     @property
     def text(self) -> str:
@@ -47,8 +47,8 @@ class ImageListModel:
 
     def rotate_image(self) -> None:
         """Rotate the current image."""
-        rotated_image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imwrite(self.path, rotated_image)
+        rotated_image = self.image.rotate(90, expand=True)
+        rotated_image.save(self.path)
 
     def delete_row(self):
         """Delete the current row."""
@@ -61,7 +61,7 @@ class ImageListModel:
 
     def move_to(self, index: int) -> None:
         """Move the index to the given index."""
-        if index < 0 or index >= self.size:
+        if index < 0 or index >= self.length:
             return
         self.index = index
 
