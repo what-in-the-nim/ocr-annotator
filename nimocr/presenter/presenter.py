@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSlot, QObject
-from model.image_list import ImageListModel
-from view.main_window import MainWindow
+from nimocr.model.image_list import ImageListModel
+from nimocr.view.main_window import MainWindow
 import logging
 
 logger = logging.getLogger(__name__)

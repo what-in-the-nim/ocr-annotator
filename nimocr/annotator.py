@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
-from model.image_list import ImageListModel
-from presenter.presenter import Presenter
-from view.main_window import MainWindow
+from nimocr.model.image_list import ImageListModel
+from nimocr.presenter.presenter import Presenter
+from nimocr.view.main_window import MainWindow
 import logging
 
 

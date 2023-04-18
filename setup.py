@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='nimocr',
-    version='0.1',
-    packages=['your_package'],
+    version='0.1.2',
+    packages=find_packages(),
     install_requires=[
         "numpy==1.24.2",
         "opencv_python==4.7.0.72",
@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'annotator=annotator:run',
+            'nimocr=nimocr.annotator:run',
         ],
     },
     author='Chatcharin Sangbutsarakum',

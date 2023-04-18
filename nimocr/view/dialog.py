@@ -105,6 +105,7 @@ class FileDialog(QDialog):
         if file_dialog.exec():
             selected_file = file_dialog.selectedFiles()[0]
             self.path_line_edit.setText(selected_file)
+            self.filename = selected_file
 
     def update_path_column_name(self, name: str) -> None:
         """Update the path column name in the line edit"""

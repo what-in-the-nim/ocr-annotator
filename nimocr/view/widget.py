@@ -12,7 +12,6 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 import numpy as np
-import cv2
 import logging
 from PIL import Image
 

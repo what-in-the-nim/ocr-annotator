@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         )
         dialog.exec()
 
-        filename = dialog.selected_file
+        filename = dialog.filename
 
         if filename:
             logger.info(f"File selected: {filename}")

@@ -72,7 +72,7 @@ class ImageListModel:
 
     def _load_csv(self) -> None:
         """Load the csv file."""
-        self.label_df = pd.read_csv(self.csv_path)
+        self.label_df = pd.read_csv(self.csv_path).sort_values(by=self.path_column_name)
 
     def load_file(self, label_path: str) -> None:
         """Set the label path and reload the csv file."""
