@@ -16,6 +16,8 @@ from .dialog import (
     BrowseDirectoryDialog,
     AboutDialog,
     FileDialog,
+    SelectColumnDialog,
+    SaveDialog,
 )
 from .widget import AnnotatorWidget
 import logging
@@ -30,8 +32,6 @@ class MainWindow(QMainWindow):
     request_save_file = pyqtSignal()
     request_image_rotate = pyqtSignal()
     request_delete_item = pyqtSignal()
-    request_change_text_column_name = pyqtSignal(str)
-    request_change_path_column_name = pyqtSignal(str)
     request_create_file_dialog = pyqtSignal()
 
     def __init__(self):
@@ -167,25 +167,45 @@ class MainWindow(QMainWindow):
         logger.info("Launch file dialog")
         self.request_create_file_dialog.emit()
 
-    def create_file_dialog(self, path_column_name: str, text_column_name: str) -> None:
+    def create_select_column_dialog(self, column_names: list[str]) -> tuple[str, str]:
+        """Create a select column dialog."""
+        logger.info("Launch column dialog")
+        # Launch column dialog for user to select the column
+        column_dialog = SelectColumnDialog(self, column_names)
+        column_dialog.exec()
+
+        # Get the selected column
+        path_column = column_dialog.path_column_name
+        text_column = column_dialog.text_column_name
+
+        # Enable the actions on the toolbar
+        self.activate_actions()
+
+        return (path_column, text_column)
+
+
+    def create_file_dialog(self) -> None:
         """Create a file dialog."""
-        dialog = FileDialog(path_column_name, text_column_name, parent=self)
-        dialog.change_path_column_name.connect(
-            self.request_change_path_column_name.emit
-        )
-        dialog.change_text_column_name.connect(
-            self.request_change_text_column_name.emit
-        )
-        dialog.exec()
+        # Launch file dialog for user to browse the file.
+        file_dialog = FileDialog(self)
+        file_dialog.exec()
 
-        filename = dialog.filename
-
-        if filename:
-            logger.info(f"File selected: {filename}")
-            self.open_selected_file.emit(filename)
-            self.activate_actions()
-        else:
+        # If no file is selected, return
+        if file_dialog.filename is None:
             logger.info("No file is selected")
+        else:
+            logger.info(f"File selected: {file_dialog.filename}")
+            # Request to load the file
+            self.open_selected_file.emit(file_dialog.filename)
+        
+    def create_save_file_dialog(self, save_path: str) -> str:
+        """Create a save file dialog."""
+        # Launch save file dialog for user to save the file.
+        save_dialog = SaveDialog(self, save_path)
+        save_dialog.exec()
+
+        logger.info(f"Save path: {save_dialog.save_path}")
+        return save_dialog.save_path
 
     def show_message(self, message: str) -> None:
         """Set the status message."""

@@ -53,7 +53,12 @@ class ImageListModel:
     @property
     def image(self) -> None:
         """Return the current image."""
-        return Image.open(self.path).convert("RGB")
+        try:
+            image = Image.open(self.path)
+            rgb_image = image.convert("RGB")
+            return rgb_image
+        except FileNotFoundError:
+            raise FileNotFoundError(f"File not found: {self.path}, Please browse directory to solve this.")
 
     @property
     def text(self) -> str:
@@ -69,22 +74,31 @@ class ImageListModel:
     def length(self) -> int:
         """Return the length of the dataframe."""
         return len(self.label_df)
+    
+    @property
+    def columns(self) -> list:
+        """Return the columns of the dataframe."""
+        return list(self.label_df.columns)
+    
+    @property
+    def save_filename(self) -> str:
+        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        base_name = self.csv_path.split(".")[0]
+        filename = f"{base_name}_{current_time}.csv"
+        return filename
 
     def _load_csv(self) -> None:
         """Load the csv file."""
-        self.label_df = pd.read_csv(self.csv_path).sort_values(by=self.path_column_name)
+        self.label_df = pd.read_csv(self.csv_path)
 
     def load_file(self, label_path: str) -> None:
         """Set the label path and reload the csv file."""
         self.csv_path = label_path
         self._load_csv()
 
-    def save_file(self) -> None:
+    def save_file(self, filename: str) -> None:
         """Save the current list to a csv file."""
-        current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        base_name = self.csv_path.split(".")[0]
-        saved_name = f"{base_name}_{current_time}.csv"
-        self.label_df.to_csv(saved_name, index=False)
+        self.label_df.to_csv(filename, index=False)
 
     def rotate_image(self) -> None:
         """Rotate the current image."""
@@ -122,10 +136,10 @@ class ImageListModel:
         """Shift the index to the previous image."""
         self.move_to(self.index - 1)
 
-    def sort_index(self) -> None:
+    def reset(self) -> None:
         """Sort the index of datafrane."""
         self.label_df = self.label_df.sort_index()
 
-    def sort(self, by: str) -> None:
+    def sort(self, column_name: str) -> None:
         """Sort the dataframe by the given column."""
-        self.label_df = self.label_df.sort_values(by=by)
+        self.label_df = self.label_df.sort_values(by=column_name)
