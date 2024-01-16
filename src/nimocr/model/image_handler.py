@@ -19,13 +19,13 @@ class ImageHandler:
         """Rotate the current image."""
         rotated_image = image.rotate(degree, expand=True)
         return rotated_image
-    
+
     @staticmethod
     def resize(image: Image.Image, size: tuple[int, int]) -> Image.Image:
         """Resize the current image."""
         resized_image = image.resize(size)
         return resized_image
-    
+
     @staticmethod
     def scale(image: Image.Image, scale: float) -> Image.Image:
         """Scale the current image."""
@@ -36,7 +36,7 @@ class ImageHandler:
         # Resize the image
         resized_image = image.resize((new_width, new_height))
         return resized_image
-    
+
     @staticmethod
     def fit(image: Image.Image, size: tuple[int, int]) -> Image.Image:
         """Fit the current image to target size with aspect ratio."""
