@@ -16,6 +16,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from ..model import ImageHandler
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +32,8 @@ class ImageWidget(QLabel):
     def set_image(self, image: Image.Image) -> None:
         """Display the image in the imageWidget."""
         logger.info("Image widget received image")
-        image = self.resize_image(image)
+        container_size = (self.width(), self.height())
+        image = ImageHandler.fit(image, container_size)
 
         # Create a QImage from the padded image data
         width, height = image.size
@@ -44,28 +47,6 @@ class ImageWidget(QLabel):
         )
         pixmap = QPixmap.fromImage(qImg)
         self.setPixmap(pixmap)
-
-    def resize_image(self, image: Image.Image) -> np.ndarray:
-        """Resize the image to fit the imageWidget."""
-        width, height = image.size
-        container_width, container_height = self.width(), self.height()
-
-        # Calculate the aspect ratio of the image
-        aspect_ratio = width / height
-
-        # Calculate the target size of the image based on the aspect ratio and the container size
-        target_width = container_width
-        target_height = int(target_width / aspect_ratio)
-
-        # If the calculated height is greater than the container height, adjust the target size
-        if target_height > container_height:
-            target_height = container_height
-            target_width = int(target_height * aspect_ratio)
-
-        # Resize the image to the target size
-        resized_image = image.resize((target_width, target_height))
-
-        return resized_image
 
 
 class TextWidget(QGroupBox):
