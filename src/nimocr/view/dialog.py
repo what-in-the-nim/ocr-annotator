@@ -158,8 +158,8 @@ class FileDialog(QDialog):
 
         default_size = self.sizeHint()
         self.setFixedHeight(default_size.height())
-        self.setMinimumWidth(default_size.width())
-        self.setMaximumWidth(default_size.width()*1.5)
+        self.setMinimumWidth(int(default_size.width()))
+        self.setMaximumWidth(int(default_size.width()*1.5))
 
 
     @pyqtSlot()
@@ -199,8 +199,8 @@ class SaveDialog(QDialog):
 
         default_size = self.sizeHint()
         self.setFixedHeight(default_size.height())
-        self.setMinimumWidth(default_size.width())
-        self.setMaximumWidth(default_size.width()*1.5)
+        self.setMinimumWidth(int(default_size.width()))
+        self.setMaximumWidth(int(default_size.width()*1.5))
 
     def accept(self) -> None:
         """Set the save_path and close the dialog."""
