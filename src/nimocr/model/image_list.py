@@ -1,9 +1,23 @@
-import os.path as op
 import pandas as pd
-from PIL import Image
-from datetime import datetime
+from dataclasses import dataclass, field
+from functools import lru_cache
+
+from .file_handler import FileHandler
+from .image_handler import ImageHandler
 
 
+class ImageListSortType:
+        """Enum for the sort type.
+
+        Attributes:
+            CER (str): Sort by CER.
+            LENGTH (str): Sort by length.
+        """
+
+        CER = "cer"
+        LENGTH = "length"
+
+@dataclass
 class ImageListModel:
     """Model for the image list.
 
@@ -31,119 +45,57 @@ class ImageListModel:
         next: Move to the next image.
         move_to: Move to the specified index.
     """
-
-    class ImageListSortType:
-        """Enum for the sort type.
-
-        Attributes:
-            CER (str): Sort by CER.
-            LENGTH (str): Sort by length.
-        """
-
-        CER = "cer"
-        LENGTH = "length"
-
-    def __init__(self) -> None:
-        """Initialize the model."""
-        self.index: int = 0
-        self.label_df: pd.DataFrame = None
-        self.label_path: str = None
-        self.extension: str = None
-        self.path_column_name: str = "path"
-        self.text_column_name: str = "text"
+    index: int = 0
+    df: pd.DataFrame = None
+    path_column_name: str = "path"
+    text_column_name: str = "text"
+    _file_handler: FileHandler = field(default_factory=FileHandler)
+    _image_handler: ImageHandler = field(default_factory=ImageHandler)
 
     @property
     def image(self) -> None:
         """Return the current image."""
-        try:
-            image = Image.open(self.path)
-            rgb_image = image.convert("RGB")
-            return rgb_image
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File not found: {self.path}, Please browse directory to solve this.")
+        return self._image_handler.open(self.path)
 
     @property
     def text(self) -> str:
         """Return the text of the current image."""
-        return self.label_df.iloc[self.index][self.text_column_name]
+        return self.df.iloc[self.index][self.text_column_name]
 
     @property
     def path(self) -> str:
         """Return the path of the current image."""
-        _path = self.label_df.iloc[self.index][self.path_column_name]
-        return op.join(op.dirname(self.label_path), _path)
+        return self.df.iloc[self.index][self.path_column_name]
 
     @property
+    @lru_cache(maxsize=1)
     def length(self) -> int:
         """Return the length of the dataframe."""
-        return len(self.label_df)
+        return len(self.df)
     
     @property
-    def columns(self) -> list:
+    @lru_cache(maxsize=1)
+    def columns(self) -> tuple[str, ...]:
         """Return the columns of the dataframe."""
-        return list(self.label_df.columns)
-    
-    @property
-    def save_filename(self) -> str:
-        current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        base_name = self.label_path.split(".")[0]
-        filename = f"{base_name}_{current_time}.{self.extension}"
-        return filename
-    
-    @staticmethod
-    def get_delimiter(extension: str) -> str:
-        """Return the delimiter of the file."""
-        if extension == "csv":
-            return ","
-        elif extension == "tsv":
-            return "\t"
-        else:
-            raise ValueError(f"Unknown extension: {extension}")
-
-    @staticmethod
-    def get_quotechar(extension: str) -> str:
-        """Return the quotechar of the file."""
-        if extension == "csv":
-            return '"'
-        elif extension == "tsv":
-            return ""
-        else:
-            raise ValueError(f"Unknown extension: {extension}")
-
-    def _load_label(self) -> None:
-        """Load the csv file."""
-        self.extension = self.label_path.split(".")[-1]
-        self.label_df = pd.read_csv(self.label_path, sep=self.get_delimiter(self.extension))
+        return tuple(self.df.columns)
 
     def load_file(self, label_path: str) -> None:
         """Set the label path and reload the csv file."""
-        self.label_path = label_path
-        self._load_label()
-
-    def save_file(self, filename: str) -> None:
-        """Save the current list to a csv file."""
-        delimiter = self.get_delimiter(self.extension)
-        quotechar = self.get_quotechar(self.extension)
-        self.label_df.to_csv(
-            filename,
-            index=False,
-            sep=delimiter,
-            quotechar=quotechar,
-        )
+        self.df = self._file_handler.load(label_path)
 
     def rotate_image(self) -> None:
         """Rotate the current image."""
-        rotated_image = self.image.rotate(90, expand=True)
+        rotated_image = self._image_handler.rotate(self.image)
         rotated_image.save(self.path)
 
-    def delete_item(self):
+    def delete_item(self) -> None:
         """Delete the current row."""
-        self.label_df.drop(self.index, inplace=True)
-        self.label_df.reset_index(drop=True, inplace=True)
+        self.df.drop(self.index, inplace=True)
+        self.df.reset_index(drop=True, inplace=True)
 
     def set_text(self, text: str) -> None:
         """Set the text of the current image."""
-        self.label_df.loc[self.index, self.text_column_name] = text
+        self.df.loc[self.index, self.text_column_name] = text
 
     def set_path_column_name(self, path_column_name: str) -> None:
         """Set the path column name."""
@@ -169,8 +121,8 @@ class ImageListModel:
 
     def reset(self) -> None:
         """Sort the index of datafrane."""
-        self.label_df = self.label_df.sort_index()
+        self.df = self.df.sort_index()
 
     def sort(self, column_name: str) -> None:
         """Sort the dataframe by the given column."""
-        self.label_df = self.label_df.sort_values(by=column_name)
+        self.df = self.df.sort_values(by=column_name)
