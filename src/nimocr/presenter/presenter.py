@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSlot, QObject
-from model.image_list import ImageListModel
-from view.main_window import MainWindow
+from ..model import ImageListModel
+from ..view import MainWindow
 import logging
 
 logger = logging.getLogger(__name__)
