@@ -2,16 +2,17 @@ import logging
 
 import numpy as np
 from PIL import Image
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot, QPoint
-from PyQt6.QtGui import QImage, QPixmap, QAction
+from PyQt6.QtCore import QPoint, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QColor, QImage, QPainter, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
-    QMenu,
+    QGraphicsOpacityEffect,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMenu,
     QSizePolicy,
     QSpinBox,
     QVBoxLayout,
@@ -23,7 +24,40 @@ from ..model import ImageHandler
 logger = logging.getLogger(__name__)
 
 
-class ImageWidget(QLabel):
+class OverlayImageLabel(QLabel):
+    def __init__(self, parent=None):
+        super(OverlayImageLabel, self).__init__(parent)
+        self.overlay_text = ""
+        self.opacity_effect = QGraphicsOpacityEffect(self)
+        self.opacity_effect.setOpacity(0.5)
+        self.setGraphicsEffect(self.opacity_effect)
+
+    def setOverlayText(self, text):
+        self.overlay_text = text
+        self.update()
+
+    def setPixmap(self, pixmap):
+        super(OverlayImageLabel, self).setPixmap(pixmap)
+        self.update()
+
+    def paintEvent(self, event):
+        super(OverlayImageLabel, self).paintEvent(event)
+        if self.pixmap() and self.overlay_text:
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.TextAntialiasing)
+
+            font = self.font()
+            font.setPointSize(14)  # Set the font size as needed
+            painter.setFont(font)
+
+            text_color = QColor(255, 255, 255)  # White text color
+            painter.setPen(text_color)
+
+            overlay_rect = self.rect()
+            painter.drawText(overlay_rect, self.overlay_text)
+
+
+class ImageWidget(OverlayImageLabel):
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -72,6 +106,11 @@ class ImageWidget(QLabel):
         )
         pixmap = QPixmap.fromImage(qImg)
         self.setPixmap(pixmap)
+
+    def set_text(self, text: str) -> None:
+        """Display the text in the imageWidget."""
+        logger.info("Image widget received text: %s", text)
+        self.setOverlayText(text)
 
 
 class TextWidget(QGroupBox):
@@ -192,6 +231,7 @@ class AnnotatorWidget(QWidget):
     def set_text(self, text: str) -> None:
         """Display the text in the textWidget."""
         logger.info("Annotator widget received text: %s", text)
+        self.imageWidget.set_text(text)
         self.textWidget.set_text(text)
 
     def set_path(self, path: str) -> None:
