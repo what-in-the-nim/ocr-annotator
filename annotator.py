@@ -8,13 +8,14 @@ from src.nimocr.presenter import Presenter
 from src.nimocr.view import MainWindow
 
 
-def setup_logger():
+def setup_logger() -> None:
+    """Setup the logger with INFO level."""
     format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=format)
     logging.info("Logger initialized with INFO level")
 
 
-def main():
+def main() -> None:
     app = QApplication([])
     app.setWindowIcon(QIcon("assets/logo.png"))
 
