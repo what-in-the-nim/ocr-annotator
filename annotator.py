@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import QApplication
+import logging
+
 from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QApplication
+
 from src.nimocr.model import ImageListModel
 from src.nimocr.presenter import Presenter
 from src.nimocr.view import MainWindow
-import logging
 
 
 def setup_logger():
@@ -27,9 +29,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument(
-        "--verbose", action="store_true", help="Enable verbose logging"
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     args = parser.parse_args()
 
     if args.verbose:
