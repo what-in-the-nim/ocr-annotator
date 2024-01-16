@@ -6,27 +6,24 @@ build-backend = "setuptools.build_meta"
 name = "nimocr"
 version = "0.0.1"
 description = "An annotation app for OCR training."
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
-  {name = "Chatcharin Sangbutsarakum", email = "chatcharinsang@gmail.com"}
+  { name = "Chatcharin Sangbutsarakum", email = "chatcharinsang@gmail.com" },
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "numpy",
-    "opencv-python",
-    "pandas",
-    "Pillow",
-    "PyQt6",
-    "black",
-    "autoflake",
-    "isort",
+  "numpy",
+  "opencv-python",
+  "pandas",
+  "Pillow",
+  "PyQt6",
+  "black",
+  "autoflake",
+  "isort",
 ]
 
 [project.scripts]
 nimocr = "nimocr.annotator:main"
 
 [project.optional-dependencies]
-test = [
-    "pytest==7.4.4",
-    "pytest-qt==4.3.1",
-]
+test = ["pytest==7.4.4", "pytest-qt==4.3.1"]
