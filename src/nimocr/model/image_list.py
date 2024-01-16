@@ -84,7 +84,7 @@ class ImageListModel:
         self.df = self._file_handler.load(label_path)
 
     def rotate_image(self) -> None:
-        """Rotate the current image."""
+        """Rotate the current image and save it."""
         rotated_image = self._image_handler.rotate(self.image)
         rotated_image.save(self.path)
 
