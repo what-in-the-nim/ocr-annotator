@@ -5,6 +5,7 @@ from PIL import Image
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import (
+    QApplication,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -28,6 +29,16 @@ class ImageWidget(QLabel):
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         logger.info("Image widget initialized")
+
+        # Set right click menu to copy the image
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.copy_image)
+
+    def copy_image(self, pos: tuple[int, int]) -> None:
+        """Copy the image to the clipboard."""
+        logger.info("Image widget received copy image request")
+        clipboard = QApplication.clipboard()
+        clipboard.setPixmap(self.pixmap())
 
     def set_image(self, image: Image.Image) -> None:
         """Display the image in the imageWidget."""
