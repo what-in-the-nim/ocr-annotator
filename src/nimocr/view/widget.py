@@ -34,6 +34,7 @@ class ImageWidget(QLabel):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.copy_image)
 
+    @pyqtSlot(tuple[int, int])
     def copy_image(self, pos: tuple[int, int]) -> None:
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
