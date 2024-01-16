@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from functools import lru_cache
 
 import pandas as pd
 
@@ -71,13 +70,11 @@ class ImageListModel:
         return self.df.iloc[self.index][self.path_column_name]
 
     @property
-    @lru_cache(maxsize=1)
     def length(self) -> int:
         """Return the length of the dataframe."""
         return len(self.df)
 
     @property
-    @lru_cache(maxsize=1)
     def columns(self) -> tuple[str, ...]:
         """Return the columns of the dataframe."""
         return tuple(self.df.columns)
