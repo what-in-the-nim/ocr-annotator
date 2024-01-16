@@ -2,10 +2,11 @@ import logging
 
 import numpy as np
 from PIL import Image
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QImage, QPixmap
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot, QPoint
+from PyQt6.QtGui import QImage, QPixmap, QAction
 from PyQt6.QtWidgets import (
     QApplication,
+    QMenu,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -30,12 +31,24 @@ class ImageWidget(QLabel):
 
         logger.info("Image widget initialized")
 
-        # Set right click menu to copy the image
+        # Set right click menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.copy_image)
+        self.customContextMenuRequested.connect(self.showMenu)
 
-    @pyqtSlot(tuple[int, int])
-    def copy_image(self, pos: tuple[int, int]) -> None:
+    def showMenu(self, pos: QPoint) -> None:
+        """Show the right click menu."""
+        logger.info(f"Image widget received right click at {pos}")
+        # Create the menu
+        menu = QMenu(self)
+        # Create copy action
+        copy_action = QAction("Copy Image", self)
+        copy_action.triggered.connect(self.copy_image)
+        # Add copy action to the menu
+        menu.addAction(copy_action)
+        # Show the menu
+        menu.exec(self.mapToGlobal(pos))
+
+    def copy_image(self) -> None:
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
         clipboard = QApplication.clipboard()
