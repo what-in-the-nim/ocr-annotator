@@ -35,7 +35,7 @@ class BrowseFileDialog(QFileDialog):
         self.setWindowTitle("Open File")
         self.setDirectory("")
         self.setFileMode(QFileDialog.FileMode.ExistingFile)
-        self.setNameFilter("CSV file (*.csv)")
+        self.setNameFilter("CSV (*.csv);;TSV (*.tsv)")
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
         self.setModal(True)
 
