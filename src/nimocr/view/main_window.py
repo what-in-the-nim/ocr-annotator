@@ -2,9 +2,25 @@ import logging
 
 from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QIcon, QKeySequence
-from PyQt6.QtWidgets import QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox, QSpinBox, QStatusBar, QToolButton
+from PyQt6.QtWidgets import (
+    QLineEdit,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QMessageBox,
+    QSpinBox,
+    QStatusBar,
+    QToolButton,
+)
 
-from .dialog import AboutDialog, BrowseDirectoryDialog, ConfirmDeleteDialog, FileDialog, SaveDialog, SelectColumnDialog
+from .dialog import (
+    AboutDialog,
+    BrowseDirectoryDialog,
+    ConfirmDeleteDialog,
+    FileDialog,
+    SaveDialog,
+    SelectColumnDialog,
+)
 from .widget import AnnotatorWidget
 
 logger = logging.getLogger(__name__)
