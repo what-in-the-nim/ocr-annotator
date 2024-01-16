@@ -1,3 +1,4 @@
+import os.path as op
 import pandas as pd
 from PIL import Image
 from datetime import datetime
@@ -44,11 +45,12 @@ class ImageListModel:
 
     def __init__(self) -> None:
         """Initialize the model."""
-        self.index = 0
-        self.label_df = None
-        self.csv_path = None
-        self.path_column_name = "path"
-        self.text_column_name = "text"
+        self.index: int = 0
+        self.label_df: pd.DataFrame = None
+        self.label_path: str = None
+        self.extension: str = None
+        self.path_column_name: str = "path"
+        self.text_column_name: str = "text"
 
     @property
     def image(self) -> None:
@@ -68,7 +70,8 @@ class ImageListModel:
     @property
     def path(self) -> str:
         """Return the path of the current image."""
-        return self.label_df.iloc[self.index][self.path_column_name]
+        _path = self.label_df.iloc[self.index][self.path_column_name]
+        return op.join(op.dirname(self.label_path), _path)
 
     @property
     def length(self) -> int:
@@ -83,22 +86,50 @@ class ImageListModel:
     @property
     def save_filename(self) -> str:
         current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        base_name = self.csv_path.split(".")[0]
-        filename = f"{base_name}_{current_time}.csv"
+        base_name = self.label_path.split(".")[0]
+        filename = f"{base_name}_{current_time}.{self.extension}"
         return filename
+    
+    @staticmethod
+    def get_delimiter(extension: str) -> str:
+        """Return the delimiter of the file."""
+        if extension == "csv":
+            return ","
+        elif extension == "tsv":
+            return "\t"
+        else:
+            raise ValueError(f"Unknown extension: {extension}")
 
-    def _load_csv(self) -> None:
+    @staticmethod
+    def get_quotechar(extension: str) -> str:
+        """Return the quotechar of the file."""
+        if extension == "csv":
+            return '"'
+        elif extension == "tsv":
+            return ""
+        else:
+            raise ValueError(f"Unknown extension: {extension}")
+
+    def _load_label(self) -> None:
         """Load the csv file."""
-        self.label_df = pd.read_csv(self.csv_path)
+        self.extension = self.label_path.split(".")[-1]
+        self.label_df = pd.read_csv(self.label_path, sep=self.get_delimiter(self.extension))
 
     def load_file(self, label_path: str) -> None:
         """Set the label path and reload the csv file."""
-        self.csv_path = label_path
-        self._load_csv()
+        self.label_path = label_path
+        self._load_label()
 
     def save_file(self, filename: str) -> None:
         """Save the current list to a csv file."""
-        self.label_df.to_csv(filename, index=False)
+        delimiter = self.get_delimiter(self.extension)
+        quotechar = self.get_quotechar(self.extension)
+        self.label_df.to_csv(
+            filename,
+            index=False,
+            sep=delimiter,
+            quotechar=quotechar,
+        )
 
     def rotate_image(self) -> None:
         """Rotate the current image."""
