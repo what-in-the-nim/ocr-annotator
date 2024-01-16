@@ -164,8 +164,8 @@ class MainWindow(QMainWindow):
 
         return (path_column, text_column)
 
-    def create_file_dialog(self) -> None:
-        """Create a file dialog."""
+    def create_browse_file_dialog(self) -> None:
+        """Create a browse file dialog."""
         # Launch file dialog for user to browse the file.
         file_dialog = FileDialog(self)
         file_dialog.exec()
