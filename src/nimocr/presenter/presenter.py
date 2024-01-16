@@ -13,7 +13,7 @@ class Presenter(QObject):
     This class is used to connect the model and the view.
     """
 
-    def __init__(self, model: ImageListModel, view: MainWindow):
+    def __init__(self, model: ImageListModel, view: MainWindow) -> None:
         super().__init__()
         self.model = model
         self.view = view
@@ -28,7 +28,7 @@ class Presenter(QObject):
         self.view.request_save_file.connect(self.save_file)
         self.view.request_image_rotate.connect(self.rotate_image)
         self.view.request_delete_item.connect(self.delete_item)
-        self.view.request_create_file_dialog.connect(self.view.create_file_dialog)
+        self.view.request_create_file_dialog.connect(self.view.create_browse_file_dialog)
 
         logger.info("Presenter initialized")
 
