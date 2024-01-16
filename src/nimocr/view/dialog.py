@@ -3,6 +3,7 @@ from typing import List
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDialog,
     QFileDialog,
@@ -85,6 +86,8 @@ class SelectColumnDialog(QDialog):
         self.text_combo_box.addItems(self.column_names)
         self.text_combo_box.activated.connect(self.on_text_combo_box_current_index_changed)
 
+        self.check_paths_checkbox = QCheckBox()
+
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.accept)
 
@@ -92,6 +95,7 @@ class SelectColumnDialog(QDialog):
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("Path Column:", self.path_combo_box)
         layout.addRow("Text Column:", self.text_combo_box)
+        layout.addRow("Validate paths", self.check_paths_checkbox)
         layout.addWidget(self.submit_button)
         self.setLayout(layout)
 
@@ -100,26 +104,33 @@ class SelectColumnDialog(QDialog):
         self.text_column_name = self.column_names[1]
         self.path_combo_box.setCurrentText(self.column_names[0])
         self.text_combo_box.setCurrentText(self.column_names[1])
+        self.check_paths_checkbox.setChecked(False)
 
     @pyqtSlot()
     def on_path_combo_box_current_index_changed(self) -> None:
         """Remove the selected column name from the text combo box."""
         self.path_column_name = self.path_combo_box.currentText()
 
-        # Remove all items in text combo box and set all items again
-        self.text_combo_box.clear()
-        self.text_combo_box.addItems(self.column_names)
-        self.text_combo_box.removeItem(self.path_combo_box.currentIndex())
+        # Check if the text is the same as the path
+        current_text = self.text_combo_box.currentText()
+        if current_text == self.path_column_name:
+            # If the text is the same as the path, select the next item
+            next_index = self.text_combo_box.currentIndex() + 1
+            next_index %= self.text_combo_box.count()
+            self.text_combo_box.setCurrentIndex(next_index)
 
     @pyqtSlot()
     def on_text_combo_box_current_index_changed(self) -> None:
         """Remove the selected column name from the path combo box."""
         self.text_column_name = self.text_combo_box.currentText()
 
-        # Remove all items in path combo box and set all items again
-        self.path_combo_box.clear()
-        self.path_combo_box.addItems(self.column_names)
-        self.path_combo_box.removeItem(self.text_combo_box.currentIndex())
+        # Check if the path is the same as the text
+        current_text = self.path_combo_box.currentText()
+        if current_text == self.text_column_name:
+            # If the path is the same as the text, select the next item
+            next_index = self.path_combo_box.currentIndex() + 1
+            next_index %= self.path_combo_box.count()
+            self.path_combo_box.setCurrentIndex(next_index)
 
 
 class FileDialog(QDialog):
