@@ -3,10 +3,9 @@ import logging
 import numpy as np
 from PIL import Image
 from PyQt6.QtCore import QPoint, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QColor, QImage, QPainter, QPixmap
+from PyQt6.QtGui import QAction, QImage, QPixmap, QResizeEvent
 from PyQt6.QtWidgets import (
     QApplication,
-    QGraphicsOpacityEffect,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -24,42 +23,10 @@ from ..model import ImageHandler
 logger = logging.getLogger(__name__)
 
 
-class OverlayImageLabel(QLabel):
-    def __init__(self, parent=None):
-        super(OverlayImageLabel, self).__init__(parent)
-        self.overlay_text = ""
-        self.opacity_effect = QGraphicsOpacityEffect(self)
-        self.opacity_effect.setOpacity(0.5)
-        self.setGraphicsEffect(self.opacity_effect)
-
-    def setOverlayText(self, text):
-        self.overlay_text = text
-        self.update()
-
-    def setPixmap(self, pixmap):
-        super(OverlayImageLabel, self).setPixmap(pixmap)
-        self.update()
-
-    def paintEvent(self, event):
-        super(OverlayImageLabel, self).paintEvent(event)
-        if self.pixmap() and self.overlay_text:
-            painter = QPainter(self)
-            painter.setRenderHint(QPainter.TextAntialiasing)
-
-            font = self.font()
-            font.setPointSize(14)  # Set the font size as needed
-            painter.setFont(font)
-
-            text_color = QColor(255, 255, 255)  # White text color
-            painter.setPen(text_color)
-
-            overlay_rect = self.rect()
-            painter.drawText(overlay_rect, self.overlay_text)
-
-
-class ImageWidget(OverlayImageLabel):
+class ImageWidget(QLabel):
     def __init__(self):
         super().__init__()
+        self.image = None
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -86,13 +53,26 @@ class ImageWidget(OverlayImageLabel):
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
         clipboard = QApplication.clipboard()
+        clipboard.setImage(self.pixmap().toImage())
         clipboard.setPixmap(self.pixmap())
 
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Handle the resize event."""
+        self.update_image()
+
     def set_image(self, image: Image.Image) -> None:
-        """Display the image in the imageWidget."""
+        """Set the image in the imageWidget."""
         logger.info("Image widget received image")
+        self.image = image
+        self.update_image()
+
+    def update_image(self) -> None:
+        """Update the image in the imageWidget."""
+        if self.image is None:
+            return
+
         container_size = (self.width(), self.height())
-        image = ImageHandler.fit(image, container_size)
+        image = ImageHandler.fit(self.image, container_size)
 
         # Create a QImage from the padded image data
         width, height = image.size
@@ -106,11 +86,6 @@ class ImageWidget(OverlayImageLabel):
         )
         pixmap = QPixmap.fromImage(qImg)
         self.setPixmap(pixmap)
-
-    def set_text(self, text: str) -> None:
-        """Display the text in the imageWidget."""
-        logger.info("Image widget received text: %s", text)
-        self.setOverlayText(text)
 
 
 class TextWidget(QGroupBox):
@@ -231,7 +206,6 @@ class AnnotatorWidget(QWidget):
     def set_text(self, text: str) -> None:
         """Display the text in the textWidget."""
         logger.info("Annotator widget received text: %s", text)
-        self.imageWidget.set_text(text)
         self.textWidget.set_text(text)
 
     def set_path(self, path: str) -> None:
