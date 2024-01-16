@@ -21,7 +21,7 @@ def main() -> None:
 
     model = ImageListModel()
     view = MainWindow()
-    Presenter(model, view)
+    _ = Presenter(model, view)
 
     app.exec()
 
