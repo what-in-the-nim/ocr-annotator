@@ -18,7 +18,7 @@ def main():
 
     model = ImageListModel()
     view = MainWindow()
-    presenter = Presenter(model, view)
+    Presenter(model, view)
 
     app.exec()
 
