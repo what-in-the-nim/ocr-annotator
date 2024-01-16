@@ -1,16 +1,18 @@
+import os
+from typing import List
+
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
-    QMessageBox,
+    QComboBox,
+    QDialog,
     QFileDialog,
     QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QDialog,
     QHBoxLayout,
-    QComboBox
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
 )
-from PyQt6.QtCore import pyqtSignal, pyqtSlot, Qt
-from typing import List
-import os
+
 
 class ConfirmDeleteDialog(QMessageBox):
     """ConfirmDeleteDialog is a dialog to confirm the deletion of an item."""
@@ -19,9 +21,7 @@ class ConfirmDeleteDialog(QMessageBox):
         super().__init__(parent)
         self.setWindowTitle("Confirm Delete")
         self.setText("Are you sure you want to delete this item?")
-        self.setStandardButtons(
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
+        self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         self.setDefaultButton(QMessageBox.StandardButton.No)
         self.setIcon(QMessageBox.Icon.Question)
         self.setModal(True)
@@ -55,7 +55,8 @@ class BrowseDirectoryDialog(QFileDialog):
         """Override the accept method to emit the signal."""
         os.chdir(self.selectedFiles()[0])
         return super().accept()
-    
+
+
 class SelectColumnDialog(QDialog):
     """
     SelectColumnDialog is a dialog to select the path and text column name.
@@ -68,7 +69,7 @@ class SelectColumnDialog(QDialog):
     back to the list. The choice of the column names will be saved in the dialog
     and can be accessed by the path_column_name and text_column_name attributes.
     """
-    
+
     def __init__(self, parent=None, column_names: List[str] = None):
         super().__init__(parent)
         self.setWindowTitle("Select Column")
@@ -78,23 +79,17 @@ class SelectColumnDialog(QDialog):
 
         self.path_combo_box = QComboBox()
         self.path_combo_box.addItems(self.column_names)
-        self.path_combo_box.activated.connect(
-            self.on_path_combo_box_current_index_changed
-        )
+        self.path_combo_box.activated.connect(self.on_path_combo_box_current_index_changed)
 
         self.text_combo_box = QComboBox()
         self.text_combo_box.addItems(self.column_names)
-        self.text_combo_box.activated.connect(
-            self.on_text_combo_box_current_index_changed
-        )
+        self.text_combo_box.activated.connect(self.on_text_combo_box_current_index_changed)
 
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.accept)
 
         layout = QFormLayout()
-        layout.setFieldGrowthPolicy(
-            QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow
-        )
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("Path Column:", self.path_combo_box)
         layout.addRow("Text Column:", self.text_combo_box)
         layout.addWidget(self.submit_button)
@@ -149,9 +144,7 @@ class FileDialog(QDialog):
         self.submit_button.clicked.connect(self.accept)
 
         layout = QFormLayout()
-        layout.setFieldGrowthPolicy(
-            QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow
-        )
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("File Path:", hboxlayout)
         layout.addWidget(self.submit_button)
         self.setLayout(layout)
@@ -159,8 +152,7 @@ class FileDialog(QDialog):
         default_size = self.sizeHint()
         self.setFixedHeight(default_size.height())
         self.setMinimumWidth(int(default_size.width()))
-        self.setMaximumWidth(int(default_size.width()*1.5))
-
+        self.setMaximumWidth(int(default_size.width() * 1.5))
 
     @pyqtSlot()
     def on_browse_button_clicked(self) -> None:
@@ -177,6 +169,7 @@ class SaveDialog(QDialog):
     This path is given when initialized. If user edit and press the submit button,
     the save_path will be saved in the dialog's attribute..
     """
+
     def __init__(self, parent=None, default_path: str = None):
         """Initialize the dialog."""
         super().__init__(parent)
@@ -190,9 +183,7 @@ class SaveDialog(QDialog):
         self.submit_button.clicked.connect(self.accept)
 
         layout = QFormLayout()
-        layout.setFieldGrowthPolicy(
-            QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow
-        )
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("Save Path:", self.path_line_edit)
         layout.addWidget(self.submit_button)
         self.setLayout(layout)
@@ -200,12 +191,13 @@ class SaveDialog(QDialog):
         default_size = self.sizeHint()
         self.setFixedHeight(default_size.height())
         self.setMinimumWidth(int(default_size.width()))
-        self.setMaximumWidth(int(default_size.width()*1.5))
+        self.setMaximumWidth(int(default_size.width() * 1.5))
 
     def accept(self) -> None:
         """Set the save_path and close the dialog."""
         self.save_path = self.path_line_edit.text()
         super().accept()
+
 
 class AboutDialog(QMessageBox):
     """

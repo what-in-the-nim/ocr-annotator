@@ -1,7 +1,9 @@
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 import pandas as pd
 from pandas import DataFrame
+
 
 class FileHandler:
     def __init__(self) -> None:
@@ -40,7 +42,7 @@ class FileHandler:
     def get_extension(path: str) -> str:
         """Return the extension of the file."""
         return path.split(".")[-1]
-    
+
     def load(self, path: str) -> DataFrame:
         """Load the label file and return the dataframe."""
         self.path = path
@@ -59,6 +61,4 @@ class FileHandler:
 
         delimiter = FileHandler.get_delimiter(self.extension)
         quotechar = FileHandler.get_quotechar(self.extension)
-        df.to_csv(
-            filename, sep=delimiter, quotechar=quotechar, index=False
-        )
+        df.to_csv(filename, sep=delimiter, quotechar=quotechar, index=False)

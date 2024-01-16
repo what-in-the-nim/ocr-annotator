@@ -1,7 +1,9 @@
-from PyQt6.QtCore import pyqtSlot, QObject
+import logging
+
+from PyQt6.QtCore import QObject, pyqtSlot
+
 from ..model import ImageListModel
 from ..view import MainWindow
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +12,7 @@ class Presenter(QObject):
     """
     This class is used to connect the model and the view.
     """
+
     def __init__(self, model: ImageListModel, view: MainWindow):
         super().__init__()
         self.model = model
@@ -40,9 +43,7 @@ class Presenter(QObject):
     def fix_label(self, new_text: str) -> None:
         """Change the text of the current sample and update the view"""
         logger.info("Presenter received new text: %s", new_text)
-        self.view.show_message(
-            f"Text change from {self.model.text} to {new_text}"
-        )
+        self.view.show_message(f"Text change from {self.model.text} to {new_text}")
         self.model.set_text(new_text)
 
     @pyqtSlot(str)
@@ -60,7 +61,6 @@ class Presenter(QObject):
         total_items = self.model.length
         self.view.annotatorWidget.textWidget.initialize_spinbox(total_items)
         self.refresh_widget()
-
 
     @pyqtSlot()
     def save_file(self) -> None:
@@ -108,7 +108,7 @@ class Presenter(QObject):
 
     def refresh_widget(self) -> None:
         """
-        When the model state is updated, 
+        When the model state is updated,
         call this function to update the view.
         """
         image = self.model.image

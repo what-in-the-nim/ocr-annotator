@@ -1,21 +1,23 @@
-import pandas as pd
 from dataclasses import dataclass, field
 from functools import lru_cache
+
+import pandas as pd
 
 from .file_handler import FileHandler
 from .image_handler import ImageHandler
 
 
 class ImageListSortType:
-        """Enum for the sort type.
+    """Enum for the sort type.
 
-        Attributes:
-            CER (str): Sort by CER.
-            LENGTH (str): Sort by length.
-        """
+    Attributes:
+        CER (str): Sort by CER.
+        LENGTH (str): Sort by length.
+    """
 
-        CER = "cer"
-        LENGTH = "length"
+    CER = "cer"
+    LENGTH = "length"
+
 
 @dataclass
 class ImageListModel:
@@ -45,6 +47,7 @@ class ImageListModel:
         next: Move to the next image.
         move_to: Move to the specified index.
     """
+
     index: int = 0
     df: pd.DataFrame = None
     path_column_name: str = "path"
@@ -72,7 +75,7 @@ class ImageListModel:
     def length(self) -> int:
         """Return the length of the dataframe."""
         return len(self.df)
-    
+
     @property
     @lru_cache(maxsize=1)
     def columns(self) -> tuple[str, ...]:

@@ -1,20 +1,20 @@
+import logging
+
+import numpy as np
+from PIL import Image
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QLabel,
-    QSizePolicy,
-    QLineEdit,
+    QGridLayout,
     QGroupBox,
     QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QSizePolicy,
     QSpinBox,
-    QGridLayout,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-import numpy as np
-import logging
-from PIL import Image
-
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +22,7 @@ logger = logging.getLogger(__name__)
 class ImageWidget(QLabel):
     def __init__(self):
         super().__init__()
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         logger.info("Image widget initialized")
@@ -87,9 +85,7 @@ class TextWidget(QGroupBox):
         self.index_spin_box = QSpinBox()
         self.index_spin_box.setValue(0)
         self.index_spin_box.setMinimum(0)
-        self.index_spin_box.setSizePolicy(
-            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
-        )
+        self.index_spin_box.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.index_spin_box.valueChanged.connect(self.send_change_index_request)
 
         self.total_amount_label = QLabel("/0")
@@ -104,9 +100,7 @@ class TextWidget(QGroupBox):
         h_boxlayout = QHBoxLayout()
         self.path_edit = QLineEdit()
         self.path_edit.setReadOnly(True)
-        self.path_edit.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
-        )
+        self.path_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         h_boxlayout.addWidget(self.path_edit)
 
         layout.addWidget(path_label, 1, 0, 1, -1)
@@ -116,9 +110,7 @@ class TextWidget(QGroupBox):
         line_label = QLabel("Label:")
         h_boxlayout = QHBoxLayout()
         self.line_edit = QLineEdit()
-        self.line_edit.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
-        )
+        self.line_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         # Send the change_text_request when the user presses Enter
         self.line_edit.returnPressed.connect(self.send_change_text_request)
         # Deselect the textWidget when the user presses Enter
@@ -178,9 +170,7 @@ class AnnotatorWidget(QWidget):
         self.textWidget = TextWidget()
 
         # Deselect the textWidget when the user clicks on the imageWidget
-        self.imageWidget.mousePressEvent = (
-            lambda event: self.textWidget.line_edit.clearFocus()
-        )
+        self.imageWidget.mousePressEvent = lambda event: self.textWidget.line_edit.clearFocus()
 
         # Add the widgets to the layout
         layout.addWidget(self.imageWidget)

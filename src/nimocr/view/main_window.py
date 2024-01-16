@@ -1,26 +1,11 @@
-from PyQt6.QtWidgets import (
-    QMainWindow,
-    QStatusBar,
-    QSpinBox,
-    QLineEdit,
-    QMessageBox,
-    QMenuBar,
-    QToolButton,
-    QMenu,
-)
-from PyQt6.QtGui import QKeySequence, QIcon
-from PyQt6.QtCore import Qt, pyqtSignal, QEvent
-
-from .dialog import (
-    ConfirmDeleteDialog,
-    BrowseDirectoryDialog,
-    AboutDialog,
-    FileDialog,
-    SelectColumnDialog,
-    SaveDialog,
-)
-from .widget import AnnotatorWidget
 import logging
+
+from PyQt6.QtCore import QEvent, Qt, pyqtSignal
+from PyQt6.QtGui import QIcon, QKeySequence
+from PyQt6.QtWidgets import QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox, QSpinBox, QStatusBar, QToolButton
+
+from .dialog import AboutDialog, BrowseDirectoryDialog, ConfirmDeleteDialog, FileDialog, SaveDialog, SelectColumnDialog
+from .widget import AnnotatorWidget
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +19,7 @@ class MainWindow(QMainWindow):
     request_delete_item = pyqtSignal()
     request_create_file_dialog = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("OCR Annotator")
         self.setWindowIcon(QIcon("assets/logo.png"))
@@ -92,17 +77,13 @@ class MainWindow(QMainWindow):
 
         # Add previous button on tool bar
         self.prevAction = self.toolBar.addAction("Prev")
-        self.prevAction.setShortcut(
-            QKeySequence(Qt.Key.Key_Left)
-        )  # Set the left arrow key shortcut
+        self.prevAction.setShortcut(QKeySequence(Qt.Key.Key_Left))  # Set the left arrow key shortcut
         self.prevAction.setEnabled(False)
         self.prevAction.triggered.connect(self.request_prev_image.emit)
 
         # Add next button on tool bar
         self.nextAction = self.toolBar.addAction("Next")
-        self.nextAction.setShortcut(
-            QKeySequence(Qt.Key.Key_Right)
-        )  # Set the right arrow key shortcut
+        self.nextAction.setShortcut(QKeySequence(Qt.Key.Key_Right))  # Set the right arrow key shortcut
         self.nextAction.setEnabled(False)
         self.nextAction.triggered.connect(self.request_next_image.emit)
 
@@ -183,7 +164,6 @@ class MainWindow(QMainWindow):
 
         return (path_column, text_column)
 
-
     def create_file_dialog(self) -> None:
         """Create a file dialog."""
         # Launch file dialog for user to browse the file.
@@ -197,7 +177,7 @@ class MainWindow(QMainWindow):
             logger.info(f"File selected: {file_dialog.filename}")
             # Request to load the file
             self.open_selected_file.emit(file_dialog.filename)
-        
+
     def create_save_file_dialog(self, save_path: str) -> str:
         """Create a save file dialog."""
         # Launch save file dialog for user to save the file.
