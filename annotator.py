@@ -12,7 +12,7 @@ def setup_logger():
     logging.info("Logger initialized with INFO level")
 
 
-def run():
+def main():
     app = QApplication([])
     app.setWindowIcon(QIcon("assets/logo.png"))
 
