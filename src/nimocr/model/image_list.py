@@ -1,4 +1,6 @@
+import os.path as op
 from dataclasses import dataclass, field
+from typing import Iterable
 
 import pandas as pd
 
@@ -67,7 +69,9 @@ class ImageListModel:
     @property
     def path(self) -> str:
         """Return the path of the current image."""
-        return self.df.iloc[self.index][self.path_column_name]
+        _path = self.df.iloc[self.index][self.path_column_name]
+        dirname = op.dirname(self._file_handler.path)
+        return op.join(dirname, _path)
 
     @property
     def length(self) -> int:
@@ -79,9 +83,18 @@ class ImageListModel:
         """Return the columns of the dataframe."""
         return tuple(self.df.columns)
 
-    def load_file(self, label_path: str) -> None:
+    @staticmethod
+    def validate_paths(paths: Iterable[str]) -> bool:
+        """Validate the paths."""
+        return all(op.isexists(path) for path in paths)
+
+    def load_file(self, label_path: str, check_corrupted_file: bool = False) -> None:
         """Set the label path and reload the csv file."""
         self.df = self._file_handler.load(label_path)
+        if check_corrupted_file:
+            path_valid = self.validate_paths(self.df[self.path_column_name])
+            if not path_valid:
+                return FileExistsError("Some of the paths do not exist.")
 
     def rotate_image(self) -> None:
         """Rotate the current image and save it."""
