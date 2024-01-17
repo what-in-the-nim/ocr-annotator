@@ -67,7 +67,7 @@ class Presenter(QObject):
         """Save the file and update the view"""
         logger.info("Presenter received save file request")
         # Create a save filedialog and get the save path.
-        save_path = self.view.create_save_file_dialog(self.model.save_filename)
+        save_path = self.view.create_save_file_dialog(self.model.save_file)
         # Save model to the save path.
         self.model.save_file(save_path)
         self.view.show_message(f"File saved at: {save_path}")
