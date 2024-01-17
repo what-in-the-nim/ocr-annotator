@@ -60,5 +60,4 @@ class FileHandler:
             filename = f"{base_name}_{current_time}.{self.extension}"
 
         delimiter = FileHandler.get_delimiter(self.extension)
-        quotechar = FileHandler.get_quotechar(self.extension)
-        df.to_csv(filename, sep=delimiter, quotechar=quotechar, index=False)
+        df.to_csv(filename, sep=delimiter, index=False)
