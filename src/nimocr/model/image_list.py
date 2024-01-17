@@ -95,7 +95,7 @@ class ImageListModel:
             path_valid = self.validate_paths(self.df[self.path_column_name])
             if not path_valid:
                 return FileExistsError("Some of the paths do not exist.")
-            
+
     def save_file(self, save_path: str) -> None:
         """Save the current list to a csv file."""
         self._file_handler.save(self.df, filename=save_path)

@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from typing import Iterable
-import os.path as op
 
 import pandas as pd
 from pandas import DataFrame
