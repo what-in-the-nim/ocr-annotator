@@ -1,8 +1,9 @@
 import logging
+from datetime import datetime
 
 from PyQt6.QtCore import QObject, pyqtSlot
 
-from ..model import ImageListModel
+from ..model import ImageListModel, FileHandler
 from ..view import MainWindow
 
 logger = logging.getLogger(__name__)
@@ -67,7 +68,10 @@ class Presenter(QObject):
         """Save the file and update the view"""
         logger.info("Presenter received save file request")
         # Create a save filedialog and get the save path.
-        save_path = self.view.create_save_file_dialog(self.model.save_file)
+        base_name = FileHandler.get_basename(self.model._file_handler.path)
+        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        save_path = f"{base_name}_{current_time}.{self.model._file_handler.extension}"
+        save_path = self.view.create_save_file_dialog(save_path)
         # Save model to the save path.
         self.model.save_file(save_path)
         self.view.show_message(f"File saved at: {save_path}")
