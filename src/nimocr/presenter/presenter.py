@@ -1,4 +1,5 @@
 import logging
+import os.path as op
 from datetime import datetime
 
 from PyQt6.QtCore import QObject, pyqtSlot
@@ -68,9 +69,11 @@ class Presenter(QObject):
         """Save the file and update the view"""
         logger.info("Presenter received save file request")
         # Create a save filedialog and get the save path.
+        label_dir = op.dirname(self.model._file_handler.path)
         base_name = FileHandler.get_basename(self.model._file_handler.path)
         current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        save_path = f"{base_name}_{current_time}.{self.model._file_handler.extension}"
+        save_filename = f"{base_name}_{current_time}.{self.model._file_handler.extension}"
+        save_path = op.join(label_dir, save_filename)
         save_path = self.view.create_save_file_dialog(save_path)
         # Save model to the save path.
         self.model.save_file(save_path)
