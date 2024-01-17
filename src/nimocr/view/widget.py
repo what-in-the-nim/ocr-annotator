@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 from PIL import Image
-from PyQt6.QtCore import QPoint, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QPoint, Qt, pyqtSignal, pyqtSlot, QMimeData
 from PyQt6.QtGui import QAction, QImage, QPixmap, QResizeEvent
 from PyQt6.QtWidgets import (
     QApplication,
@@ -52,9 +52,10 @@ class ImageWidget(QLabel):
     def copy_image(self) -> None:
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
+        data = QMimeData()
+        data.setImageData(self.pixmap().toImage())
         clipboard = QApplication.clipboard()
-        clipboard.setImage(self.pixmap().toImage())
-        clipboard.setPixmap(self.pixmap())
+        clipboard.setMimeData(data)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         """Handle the resize event."""
