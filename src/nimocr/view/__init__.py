@@ -1,6 +1,5 @@
 from .dialog import (
     AboutDialog,
-    BrowseDirectoryDialog,
     BrowseFileDialog,
     ConfirmDeleteDialog,
     FileDialog,
@@ -13,7 +12,6 @@ from .widget import AnnotatorWidget, ImageWidget, TextWidget
 __all__ = [
     "ConfirmDeleteDialog",
     "BrowseFileDialog",
-    "BrowseDirectoryDialog",
     "SelectColumnDialog",
     "FileDialog",
     "SaveDialog",

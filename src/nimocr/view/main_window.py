@@ -15,7 +15,6 @@ from PyQt6.QtWidgets import (
 
 from .dialog import (
     AboutDialog,
-    BrowseDirectoryDialog,
     ConfirmDeleteDialog,
     FileDialog,
     SaveDialog,
@@ -64,10 +63,6 @@ class MainWindow(QMainWindow):
         # Add open file action
         self.aboutAction = self.fileMenu.addAction("About")
         self.aboutAction.triggered.connect(AboutDialog(self).exec)
-
-        # Add browse directory action
-        self.browseAction = self.fileMenu.addAction("Browse Directory")
-        self.browseAction.triggered.connect(BrowseDirectoryDialog(self).exec)
 
     def _setup_statusbar(self) -> None:
         self.statusBar = QStatusBar()

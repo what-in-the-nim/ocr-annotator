@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from PyQt6.QtCore import pyqtSlot
@@ -40,23 +39,6 @@ class BrowseFileDialog(QFileDialog):
         self.setNameFilters(["CSV (*.csv),TSV (*.tsv)"])
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
         self.setModal(True)
-
-
-class BrowseDirectoryDialog(QFileDialog):
-    """BrowseDirectoryDialog is a file dialog to browse the directory."""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Open Directory")
-        self.setDirectory("")
-        self.setFileMode(QFileDialog.FileMode.Directory)
-        self.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
-        self.setModal(True)
-
-    def accept(self) -> None:
-        """Override the accept method to emit the signal."""
-        os.chdir(self.selectedFiles()[0])
-        return super().accept()
 
 
 class SelectColumnDialog(QDialog):
