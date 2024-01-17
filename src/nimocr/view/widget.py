@@ -133,6 +133,7 @@ class TextWidget(QGroupBox):
         self.line_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         # Send the change_text_request when the user presses Enter
         self.line_edit.returnPressed.connect(self.send_change_text_request)
+        self.line_edit.textChanged.connect(self.send_change_text_request)
         # Deselect the textWidget when the user presses Enter
         self.line_edit.returnPressed.connect(self.line_edit.clearFocus)
         h_boxlayout.addWidget(self.line_edit)
