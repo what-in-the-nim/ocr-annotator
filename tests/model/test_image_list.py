@@ -3,7 +3,7 @@ import os.path as op
 import pytest
 import pandas as pd
 
-from nimocr.model import ImageListModel, ImageHandler  # Replace 'your_module' with the actual module name
+from nimocr.model import ImageListModel
 
 @pytest.fixture
 def image_list_model():
