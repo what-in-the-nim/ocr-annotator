@@ -27,6 +27,7 @@ class ImageWidget(QLabel):
     def __init__(self):
         super().__init__()
         self.image = None
+        self.setMinimumSize(1, 30)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
