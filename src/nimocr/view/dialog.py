@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from PyQt6.QtCore import pyqtSlot
@@ -12,6 +13,8 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPushButton,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ConfirmDeleteDialog(QMessageBox):
@@ -92,6 +95,7 @@ class SelectColumnDialog(QDialog):
     @pyqtSlot()
     def on_path_combo_box_current_index_changed(self) -> None:
         """Remove the selected column name from the text combo box."""
+        logger.info("Path combo box current index changed")
         self.path_column_name = self.path_combo_box.currentText()
 
         # Check if the text is the same as the path
@@ -105,6 +109,7 @@ class SelectColumnDialog(QDialog):
     @pyqtSlot()
     def on_text_combo_box_current_index_changed(self) -> None:
         """Remove the selected column name from the path combo box."""
+        logger.info("Text combo box current index changed")
         self.text_column_name = self.text_combo_box.currentText()
 
         # Check if the path is the same as the text
@@ -151,6 +156,7 @@ class FileDialog(QDialog):
     @pyqtSlot()
     def on_browse_button_clicked(self) -> None:
         """Open the file dialog to browse label file and set the path to the line edit"""
+        logger.info("Browse button clicked")
         file_dialog = BrowseFileDialog()
         if file_dialog.exec():
             selected_file = file_dialog.selectedFiles()[0]
@@ -189,6 +195,7 @@ class SaveDialog(QDialog):
 
     def accept(self) -> None:
         """Set the save_path and close the dialog."""
+        logger.info("Save dialog accepted")
         self.save_path = self.path_line_edit.text()
         super().accept()
 

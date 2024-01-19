@@ -148,6 +148,7 @@ class MainWindow(QMainWindow):
 
     def confirm_delete(self) -> None:
         """Show a confirm dialog before deleting the item."""
+        logger.info("Launch confirm dialog to confirm image deletion")
         confirm_dialog = ConfirmDeleteDialog(self)
         result = confirm_dialog.exec()
 
@@ -156,12 +157,12 @@ class MainWindow(QMainWindow):
 
     def load_file(self) -> None:
         """Get a file path with QFileDialog and load the file."""
-        logger.info("Launch file dialog")
+        logger.info("Launch file dialog to browse label file")
         self.request_create_file_dialog.emit()
 
     def create_select_column_dialog(self, column_names: list[str]) -> tuple[str, str]:
         """Create a select column dialog."""
-        logger.info("Launch column dialog")
+        logger.info("Launch column dialog to select column inside label")
         # Launch column dialog for user to select the column
         column_dialog = SelectColumnDialog(self, column_names)
         column_dialog.exec()
@@ -174,6 +175,7 @@ class MainWindow(QMainWindow):
 
     def create_browse_file_dialog(self) -> None:
         """Create a browse file dialog."""
+        logger.info("Launch file dialog to browse label file")
         # Launch file dialog for user to browse the file.
         file_dialog = FileDialog(self)
         file_dialog.exec()
@@ -188,6 +190,7 @@ class MainWindow(QMainWindow):
 
     def create_save_file_dialog(self, save_path: str) -> str:
         """Create a save file dialog."""
+        logger.info("Launch save dialog to select the save path")
         # Launch save file dialog for user to save the file.
         save_dialog = SaveDialog(self, save_path)
         save_dialog.exec()
@@ -201,6 +204,7 @@ class MainWindow(QMainWindow):
 
     def activate_actions(self) -> None:
         """Enable the actions on the toolbar."""
+        logger.info("Enable actions on the toolbar")
         self.saveAction.setEnabled(True)
         self.prevAction.setEnabled(True)
         self.nextAction.setEnabled(True)

@@ -122,6 +122,8 @@ class Presenter(QObject):
         When the model state is updated,
         call this function to update the view.
         """
+        logger.info("Refreshing widget")
+        # Get the image from the model.
         image = self.model.image
         # Return if image is exception raised
         if isinstance(image, Exception):
