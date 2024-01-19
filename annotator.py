@@ -11,7 +11,7 @@ from src.nimocr.view import MainWindow
 def setup_logger() -> None:
     """Setup the logger with INFO level."""
     format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
-    logging.basicConfig(level=logging.INFO, format=format)
+    logging.basicConfig(filename='user.log', level=logging.INFO, format=format, filemode='w')
     logging.info("Logger initialized with INFO level")
 
 
