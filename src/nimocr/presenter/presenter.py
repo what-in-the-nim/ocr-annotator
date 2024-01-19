@@ -64,7 +64,7 @@ class Presenter(QObject):
         # Enable the actions on the toolbar.
         self.view.activate_actions()
         # Enable the spinbox.
-        self.view.annotatorWidget.textWidget.index_spin_box.setEnable(True)
+        self.view.annotatorWidget.textWidget.index_spin_box.setEnabled(True)
         self.view.annotatorWidget.textWidget.initialize_spinbox(total_items)
         self.refresh_widget()
 
