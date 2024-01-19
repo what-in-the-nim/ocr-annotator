@@ -78,7 +78,7 @@ class SelectColumnDialog(QDialog):
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("Path Column:", self.path_combo_box)
         layout.addRow("Text Column:", self.text_combo_box)
-        layout.addRow("Validate paths", self.check_paths_checkbox)
+        layout.addRow("Validate paths:", self.check_paths_checkbox)
         layout.addWidget(self.submit_button)
         self.setLayout(layout)
 
