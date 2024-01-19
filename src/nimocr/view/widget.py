@@ -231,13 +231,13 @@ class AnnotatorWidget(QWidget):
 
     def set_text(self, text: str) -> None:
         """Display the text in the textWidget."""
-        logger.info("Annotator widget received text: %s", text)
+        logger.info("Annotator widget received text: '%s'", text)
         self.previewTextWidget.setText(text)
         self.textWidget.set_text(text)
 
     def set_path(self, path: str) -> None:
         """Display the path in the textWidget."""
-        logger.info("Annotator widget received path: %s", path)
+        logger.info("Annotator widget received path: '%s'", path)
         self.textWidget.set_path(path)
 
     def set_index(self, index: int):
