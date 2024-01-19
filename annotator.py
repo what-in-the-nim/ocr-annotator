@@ -29,7 +29,13 @@ def main() -> None:
 
 if __name__ == "__main__":
     format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
-    logging.basicConfig(filename='user.log', level=logging.INFO, format=format, filemode='w')
+    logging.basicConfig(
+        filename='user.log',
+        level=logging.INFO,
+        format=format,
+        filemode='w',
+        encoding='utf-8'
+    )
     logging.info("Logger initialized with INFO level")
 
     main()
