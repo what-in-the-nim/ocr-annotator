@@ -108,6 +108,7 @@ class TextWidget(QGroupBox):
         self.index_spin_box.setValue(0)
         self.index_spin_box.setMinimum(0)
         self.index_spin_box.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.index_spin_box.setEnabled(False)
         self.index_spin_box.valueChanged.connect(self.send_change_index_request)
 
         self.total_amount_label = QLabel("/0")

@@ -170,9 +170,6 @@ class MainWindow(QMainWindow):
         path_column = column_dialog.path_column_name
         text_column = column_dialog.text_column_name
 
-        # Enable the actions on the toolbar
-        self.activate_actions()
-
         return (path_column, text_column)
 
     def create_browse_file_dialog(self) -> None:

@@ -61,6 +61,10 @@ class Presenter(QObject):
         self.model.set_text_column_name(text_column)
         # Initialize the spinbox to match the new length.
         total_items = self.model.length
+        # Enable the actions on the toolbar.
+        self.view.activate_actions()
+        # Enable the spinbox.
+        self.view.annotatorWidget.textWidget.index_spin_box.setEnable(True)
         self.view.annotatorWidget.textWidget.initialize_spinbox(total_items)
         self.refresh_widget()
 
