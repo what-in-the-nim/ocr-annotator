@@ -1,6 +1,6 @@
 import logging
 
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QFontDatabase, QFont
 from PyQt6.QtWidgets import QApplication
 
 from src.nimocr.model import ImageListModel
@@ -16,7 +16,15 @@ def setup_logger() -> None:
 
 
 def main() -> None:
+    """Initialize the application."""
     app = QApplication([])
+    # Register fonts
+    QFontDatabase.addApplicationFont('assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Regular.ttf')
+    QFontDatabase.addApplicationFont('assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Bold.ttf')
+    # Set default application fonts
+    all_registered_fonts = QFontDatabase.families()
+    logging.info(f"Registered fonts: {all_registered_fonts}")
+    app.setFont(QFont("IBM Plex Sans Thai", 12))
     app.setWindowIcon(QIcon("assets/logo.png"))
 
     model = ImageListModel()
