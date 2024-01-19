@@ -8,13 +8,6 @@ from src.nimocr.presenter import Presenter
 from src.nimocr.view import MainWindow
 
 
-def setup_logger() -> None:
-    """Setup the logger with INFO level."""
-    format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
-    logging.basicConfig(filename='user.log', level=logging.INFO, format=format, filemode='w')
-    logging.info("Logger initialized with INFO level")
-
-
 def main() -> None:
     """Initialize the application."""
     app = QApplication([])
@@ -35,12 +28,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
+    format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
+    logging.basicConfig(filename='user.log', level=logging.INFO, format=format, filemode='w')
+    logging.info("Logger initialized with INFO level")
 
-    parser = ArgumentParser()
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-    args = parser.parse_args()
-
-    if args.verbose:
-        setup_logger()
     main()
