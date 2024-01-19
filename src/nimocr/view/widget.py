@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from PIL import Image
 from PyQt6.QtCore import QPoint, Qt, pyqtSignal, pyqtSlot, QMimeData
-from PyQt6.QtGui import QAction, QImage, QPixmap, QResizeEvent
+from PyQt6.QtGui import QAction, QImage, QPixmap, QResizeEvent, QFont
 from PyQt6.QtWidgets import (
     QApplication,
     QGridLayout,
@@ -21,6 +21,22 @@ from PyQt6.QtWidgets import (
 from ..model import ImageHandler
 
 logger = logging.getLogger(__name__)
+
+class PreviewTextWidget(QLabel):
+    def __init__(self, text, parent=None):
+        super(PreviewTextWidget, self).__init__(text, parent)
+
+        # Set only font size and bold
+        font = QFont("IBM Plex Sans Thai", 18, QFont.Weight.Bold)
+        self.setFont(font)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setMaximumHeight(50)
+
+        # Set background color and border
+        self.setStyleSheet("background-color: #edfcfa; border: 1px solid #999; border-radius: 5px;")
+
+        # Set padding
+        self.setContentsMargins(10, 5, 10, 5)
 
 
 class ImageWidget(QLabel):
@@ -191,12 +207,18 @@ class AnnotatorWidget(QWidget):
         self.setLayout(layout)
 
         self.imageWidget = ImageWidget()
+        self.previewTextWidget = PreviewTextWidget("")
         self.textWidget = TextWidget()
 
         # Deselect the textWidget when the user clicks on the imageWidget
         self.imageWidget.mousePressEvent = lambda event: self.textWidget.line_edit.clearFocus()
+        self.previewTextWidget.mousePressEvent = lambda event: self.textWidget.line_edit.clearFocus()
+
+        # Update preview text when the user changes the text
+        self.textWidget.change_text_request.connect(self.previewTextWidget.setText)
 
         # Add the widgets to the layout
+        layout.addWidget(self.previewTextWidget)
         layout.addWidget(self.imageWidget)
         layout.addWidget(self.textWidget)
 
@@ -210,6 +232,7 @@ class AnnotatorWidget(QWidget):
     def set_text(self, text: str) -> None:
         """Display the text in the textWidget."""
         logger.info("Annotator widget received text: %s", text)
+        self.previewTextWidget.setText(text)
         self.textWidget.set_text(text)
 
     def set_path(self, path: str) -> None:

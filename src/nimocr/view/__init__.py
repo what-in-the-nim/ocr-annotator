@@ -7,7 +7,7 @@ from .dialog import (
     SelectColumnDialog,
 )
 from .main_window import MainWindow
-from .widget import AnnotatorWidget, ImageWidget, TextWidget
+from .widget import AnnotatorWidget, ImageWidget, TextWidget, PreviewTextWidget
 
 __all__ = [
     "ConfirmDeleteDialog",
@@ -17,6 +17,8 @@ __all__ = [
     "SaveDialog",
     "AboutDialog",
     "MainWindow",
+    "ImageWidget",
+    "MinimalTextWidget,"
     "ImageWidget",
     "TextWidget",
     "AnnotatorWidget",
