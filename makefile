@@ -1,2 +1,2 @@
 compile:
-	pyinstaller --noconfirm --onefile --windowed --clean --add-data "assets/logo.png;." "annotator.py"
+	pyinstaller --noconfirm --onefile --windowed --clean --add-data "assets:." "annotator.py"
