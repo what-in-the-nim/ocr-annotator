@@ -88,7 +88,7 @@ class ImageListModel:
         """Validate the paths."""
         return all(op.isexists(path) for path in paths)
 
-    def load_file(self, label_path: str, check_corrupted_file: bool = False) -> None:
+    def load_file(self, label_path: str, check_corrupted_file: bool = True) -> None:
         """Set the label path and reload the csv file."""
         self.df = self._file_handler.load(label_path)
         if check_corrupted_file:
