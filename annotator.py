@@ -1,6 +1,6 @@
 import logging
 
-from PyQt6.QtGui import QIcon, QFontDatabase, QFont
+from PyQt6.QtGui import QFont, QFontDatabase, QIcon
 from PyQt6.QtWidgets import QApplication
 
 from src.nimocr.model import ImageListModel
@@ -12,8 +12,12 @@ def main() -> None:
     """Initialize the application."""
     app = QApplication([])
     # Register fonts
-    QFontDatabase.addApplicationFont('assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Regular.ttf')
-    QFontDatabase.addApplicationFont('assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Bold.ttf')
+    QFontDatabase.addApplicationFont(
+        "assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Regular.ttf"
+    )
+    QFontDatabase.addApplicationFont(
+        "assets/fonts/IBM_Plex_Sans_Thai/IBMPlexSansThai-Bold.ttf"
+    )
     # Set default application fonts
     all_registered_fonts = QFontDatabase.families()
     logging.info(f"Registered fonts: {all_registered_fonts}")
@@ -30,11 +34,11 @@ def main() -> None:
 if __name__ == "__main__":
     format = "%(filename)s - %(levelname)s - %(funcName)s - %(message)s"
     logging.basicConfig(
-        filename='user.log',
+        filename="user.log",
         level=logging.INFO,
         format=format,
-        filemode='w',
-        encoding='utf-8'
+        filemode="w",
+        encoding="utf-8",
     )
     logging.info("Logger initialized with INFO level")
 

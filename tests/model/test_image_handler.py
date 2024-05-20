@@ -1,19 +1,24 @@
 import pytest
 from PIL import Image
 
-from nimocr.model import ImageHandler  # Replace 'your_module' with the actual module name
+from nimocr.model import (  # Replace 'your_module' with the actual module name
+    ImageHandler,
+)
+
 
 @pytest.fixture
 def image_handler():
     return ImageHandler()
 
+
 def test_open_nonexistent_file(image_handler):
     # Provide a path to a nonexistent image file
     nonexistent_image_path = "path/to/nonexistent/image.jpg"
-    
+
     # Check if FileNotFoundError is raised
     result = image_handler.open(nonexistent_image_path)
     assert isinstance(result, FileNotFoundError)
+
 
 def test_rotate(image_handler):
     # Create a sample image
@@ -25,6 +30,7 @@ def test_rotate(image_handler):
     # Check if the rotated image has the expected size
     assert rotated_image.size == (100, 100)
 
+
 def test_resize(image_handler):
     # Create a sample image
     image = Image.new("RGB", (100, 100), "white")
@@ -35,6 +41,7 @@ def test_resize(image_handler):
     # Check if the resized image has the expected size
     assert resized_image.size == (50, 50)
 
+
 def test_scale(image_handler):
     # Create a sample image
     image = Image.new("RGB", (100, 100), "white")
@@ -44,6 +51,7 @@ def test_scale(image_handler):
 
     # Check if the scaled image has the expected size
     assert scaled_image.size == (50, 50)
+
 
 def test_fit(image_handler):
     # Create a sample image

@@ -1,3 +1,4 @@
+import os.path as op
 from datetime import datetime
 from typing import Optional
 
@@ -49,6 +50,13 @@ class FileHandler:
         self.extension = FileHandler.get_extension(path)
         delimiter = FileHandler.get_delimiter(self.extension)
         df = pd.read_csv(path, sep=delimiter)
+        return df
+
+    def normalize_path(self, df: DataFrame, path_column_name: str) -> DataFrame:
+        """Normalize the path to be relative to the label file."""
+        df[path_column_name] = df[path_column_name].apply(
+            lambda x: op.normpath(op.join(op.dirname(self.path), x))
+        )
         return df
 
     def save(self, df: DataFrame, filename: Optional[str] = None) -> None:

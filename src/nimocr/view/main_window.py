@@ -11,6 +11,8 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QStatusBar,
     QToolButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 from .dialog import (
@@ -20,7 +22,7 @@ from .dialog import (
     SaveDialog,
     SelectColumnDialog,
 )
-from .widget import AnnotatorWidget
+from .widgets import AnnotatorWidget, PageWidget
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +32,9 @@ class MainWindow(QMainWindow):
     request_next_image = pyqtSignal()
     request_prev_image = pyqtSignal()
     request_save_file = pyqtSignal()
-    request_image_rotate = pyqtSignal()
-    request_delete_item = pyqtSignal()
+    request_image_rotate = pyqtSignal(int)
+    request_delete_item = pyqtSignal(int)
+    request_change_text = pyqtSignal(int, str)
     request_create_file_dialog = pyqtSignal()
 
     def __init__(self) -> None:
@@ -40,9 +43,20 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("assets/logo.png"))
         self.resize(800, 600)
 
+        # Set up widget.
+        # Create a container widget and set a QVBoxLayout to it
+        container = QWidget()
+        layout = QVBoxLayout()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
         # Set central widget
         self.annotatorWidget = AnnotatorWidget()
-        self.setCentralWidget(self.annotatorWidget)
+        self.pageWidget = PageWidget(self.annotatorWidget.item_per_page, 0)
+        self.pageWidget.setFixedHeight(50)
+
+        layout.addWidget(self.annotatorWidget)
+        layout.addWidget(self.pageWidget)
 
         self._setup_menubar()
         self._setup_statusbar()
@@ -54,6 +68,7 @@ class MainWindow(QMainWindow):
         logger.info("Main window initialized")
 
     def _setup_menubar(self) -> None:
+        """Add menu bar to the main window."""
         self.menuBar = QMenuBar()
         self.setMenuBar(self.menuBar)
 
@@ -65,10 +80,23 @@ class MainWindow(QMainWindow):
         self.aboutAction.triggered.connect(AboutDialog(self).exec)
 
     def _setup_statusbar(self) -> None:
+        """Add status bar to the main window."""
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
 
     def _setup_toolbar(self) -> None:
+        """
+        Add toolbar to the main window.
+
+        The toolbar contains the following actions:
+        - Load: Load a file
+        - Save: Save the current file
+        - Prev: Go to the previous image
+        - Next: Go to the next image
+        - Sort: Sort the images
+            - Order: Ascending or Descending
+            - By: Text, Path, or Index
+        """
         self.toolBar = self.addToolBar("Tools")
         self.toolBar.setMovable(False)
 
@@ -88,30 +116,22 @@ class MainWindow(QMainWindow):
 
         # Add previous button on tool bar
         self.prevAction = self.toolBar.addAction("Prev")
-        self.prevAction.setShortcut(QKeySequence(Qt.Key.Key_Left))  # Set the left arrow key shortcut
+        self.prevAction.setShortcut(
+            QKeySequence(Qt.Key.Key_Left)
+        )  # Set the left arrow key shortcut
         self.prevAction.setEnabled(False)
         self.prevAction.triggered.connect(self.request_prev_image.emit)
 
         # Add next button on tool bar
         self.nextAction = self.toolBar.addAction("Next")
-        self.nextAction.setShortcut(QKeySequence(Qt.Key.Key_Right))  # Set the right arrow key shortcut
+        self.nextAction.setShortcut(
+            QKeySequence(Qt.Key.Key_Right)
+        )  # Set the right arrow key shortcut
         self.nextAction.setEnabled(False)
         self.nextAction.triggered.connect(self.request_next_image.emit)
 
         # Add seperator line on tool bar
         self.toolBar.addSeparator()
-
-        # Add rotate button on tool bar
-        self.rotateAction = self.toolBar.addAction("Rotate")
-        self.rotateAction.setShortcut("r")
-        self.rotateAction.setEnabled(False)
-        self.rotateAction.triggered.connect(self.request_image_rotate.emit)
-
-        # Add delete button on tool bar
-        self.deleteAction = self.toolBar.addAction("Delete")
-        self.deleteAction.setShortcut("Ctrl+D")
-        self.deleteAction.setEnabled(False)
-        self.deleteAction.triggered.connect(self.confirm_delete)
 
         # Add sort button menu on tool bar
 
@@ -120,13 +140,16 @@ class MainWindow(QMainWindow):
         self.ascending_action = self.sortOrderMenu.addAction("Ascending")
         self.descending_action = self.sortOrderMenu.addAction("Descending")
         self.sortOrderToolButton = QToolButton()
-        self.sortOrderToolButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.sortOrderToolButton.setPopupMode(
+            QToolButton.ToolButtonPopupMode.InstantPopup
+        )
         self.sortOrderToolButton.setMenu(self.sortOrderMenu)
 
         # Create sort by menu
         self.sortByMenu = QMenu("By", self)
         self.text_action = self.sortByMenu.addAction("Text")
         self.path_action = self.sortByMenu.addAction("Path")
+        self.reset_action = self.sortByMenu.addAction("Index")
         self.sortByToolButton = QToolButton()
         self.sortByToolButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.sortByToolButton.setMenu(self.sortByMenu)
@@ -146,7 +169,7 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(self.toolBar)
 
-    def confirm_delete(self) -> None:
+    def confirm_delete_action(self) -> None:
         """Show a confirm dialog before deleting the item."""
         logger.info("Launch confirm dialog to confirm image deletion")
         confirm_dialog = ConfirmDeleteDialog(self)
@@ -208,8 +231,6 @@ class MainWindow(QMainWindow):
         self.saveAction.setEnabled(True)
         self.prevAction.setEnabled(True)
         self.nextAction.setEnabled(True)
-        self.rotateAction.setEnabled(True)
-        self.deleteAction.setEnabled(True)
         self.sortAction.setEnabled(True)
 
     def eventFilter(self, obj, event):

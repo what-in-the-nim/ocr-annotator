@@ -3,7 +3,6 @@ from typing import List
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QDialog,
     QFileDialog,
@@ -24,7 +23,9 @@ class ConfirmDeleteDialog(QMessageBox):
         super().__init__(parent)
         self.setWindowTitle("Confirm Delete")
         self.setText("Are you sure you want to delete this item?")
-        self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        self.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
         self.setDefaultButton(QMessageBox.StandardButton.No)
         self.setIcon(QMessageBox.Icon.Question)
         self.setModal(True)
@@ -66,13 +67,15 @@ class SelectColumnDialog(QDialog):
 
         self.path_combo_box = QComboBox()
         self.path_combo_box.addItems(self.column_names)
-        self.path_combo_box.activated.connect(self.on_path_combo_box_current_index_changed)
+        self.path_combo_box.activated.connect(
+            self.on_path_combo_box_current_index_changed
+        )
 
         self.text_combo_box = QComboBox()
         self.text_combo_box.addItems(self.column_names)
-        self.text_combo_box.activated.connect(self.on_text_combo_box_current_index_changed)
-
-        self.check_paths_checkbox = QCheckBox()
+        self.text_combo_box.activated.connect(
+            self.on_text_combo_box_current_index_changed
+        )
 
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.accept)
@@ -81,7 +84,6 @@ class SelectColumnDialog(QDialog):
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.addRow("Path Column:", self.path_combo_box)
         layout.addRow("Text Column:", self.text_combo_box)
-        layout.addRow("Validate paths:", self.check_paths_checkbox)
         layout.addWidget(self.submit_button)
         self.setLayout(layout)
 
@@ -90,7 +92,6 @@ class SelectColumnDialog(QDialog):
         self.text_column_name = self.column_names[1]
         self.path_combo_box.setCurrentText(self.column_names[0])
         self.text_combo_box.setCurrentText(self.column_names[1])
-        self.check_paths_checkbox.setChecked(False)
 
     @pyqtSlot()
     def on_path_combo_box_current_index_changed(self) -> None:
@@ -130,7 +131,7 @@ class FileDialog(QDialog):
 
         hboxlayout = QHBoxLayout()
         self.path_line_edit = QLineEdit()
-        self.path_line_edit.setReadOnly(True)
+        self.path_line_edit.setReadOnly(False)
 
         self.browse_button = QPushButton("Browse")
         # Set fixed width to default size
