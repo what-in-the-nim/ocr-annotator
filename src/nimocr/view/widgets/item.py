@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QGridLayout, QLabel, QPushButton, QSizePolicy, QStyle, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QStyle, QVBoxLayout, QWidget
 
 from .image import ImageWidget
 from .text import TextWidget
@@ -53,13 +53,19 @@ class ItemWidget(QWidget):
         # Set the state of the widget
         self.index = None
         # Make the widget height unchangeable
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        grid_layout = QGridLayout()
-        grid_layout.setSizeConstraint(QGridLayout.SizeConstraint.SetMinAndMaxSize)
+        self.initUI()
+        self.disable()
+
+    def initUI(self) -> None:
+        """Set up the user interface."""
+        item_layout = QVBoxLayout()
+        image_layout = QHBoxLayout()
 
         # Create tool widget.
         tool_widget = QWidget()
+        tool_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         tool_layout = QVBoxLayout()
 
         # Create rotate button from logo
@@ -68,7 +74,7 @@ class ItemWidget(QWidget):
         rotate_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserReload)
         self.rotate_button.setIcon(rotate_icon)
         self.rotate_button.clicked.connect(self._rotate_image)
-        tool_layout.addWidget(self.rotate_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        tool_layout.addWidget(self.rotate_button)
 
         # Create trash button from logo
         self.trash_button = QPushButton()
@@ -76,26 +82,27 @@ class ItemWidget(QWidget):
         trash_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TrashIcon)
         self.trash_button.setIcon(trash_icon)
         self.trash_button.clicked.connect(self._delete_item)
-        tool_layout.addWidget(self.trash_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        tool_layout.addWidget(self.trash_button)
 
         # Create index/total label
         self.index_label = QLabel("-")
         self.index_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        tool_layout.addWidget(self.index_label, alignment=Qt.AlignmentFlag.AlignLeft)
+        tool_layout.addWidget(self.index_label)
         tool_layout.addStretch()
         tool_widget.setLayout(tool_layout)
 
-        grid_layout.addWidget(tool_widget, 0, 0, 1, 1)
+        image_layout.addWidget(tool_widget)
 
         # Create image and text widgets
         self.image_widget = ImageWidget()
-        grid_layout.addWidget(self.image_widget, 0, 1, 1, 1)
+        image_layout.addWidget(self.image_widget)
+        item_layout.addLayout(image_layout)
 
         self.text_widget = TextWidget()
-        # self.text_widget.request_change_text.connect(self._change_text)
-        grid_layout.addWidget(self.text_widget, 1, 0, 1, 2)
+        self.text_widget.request_change_text.connect(self._change_text)
+        item_layout.addWidget(self.text_widget)
 
-        self.setLayout(grid_layout)
+        self.setLayout(item_layout)
 
     def _delete_item(self) -> None:
         """Emit the request_delete_item signal."""
@@ -129,6 +136,17 @@ class ItemWidget(QWidget):
         self.index = index
         self.index_label.setText(f"{index}")
 
+    def disable(self) -> None:
+        """Set the widget to be disabled."""
+        self.rotate_button.setEnabled(False)
+        self.trash_button.setEnabled(False)
+        self.text_widget.disable()
+
+    def enable(self) -> None:
+        """Set the widget to be enabled."""
+        self.rotate_button.setEnabled(True)
+        self.trash_button.setEnabled(True)
+        self.text_widget.enable()
 
 if __name__ == "__main__":
     import sys

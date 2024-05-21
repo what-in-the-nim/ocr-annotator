@@ -79,6 +79,11 @@ class ImageListModel:
     def columns(self) -> tuple[str, ...]:
         """Return the columns of the dataframe."""
         return tuple(self.df.columns)
+    
+    @property
+    def paths(self) -> list[str]:
+        """Return the paths in the dataframe."""
+        return self.df[self.path_column_name].tolist()
 
     @staticmethod
     def _validate_paths(paths: Iterable[str]) -> bool:

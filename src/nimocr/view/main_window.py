@@ -26,7 +26,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("OCR Annotator")
         self.setWindowIcon(QIcon("assets/logo.png"))
         self.resize(800, 600)
-
         # Set up widget.
         self.annotatorWidget = AnnotatorWidget()
         self.setCentralWidget(self.annotatorWidget)

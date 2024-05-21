@@ -39,6 +39,12 @@ class PathListWidget(QListWidget):
 
             self.itemClicked.connect(self.on_item_clicked)
 
+    def set_paths(self, paths: list[str]) -> None:
+        """Set the paths to be displayed."""
+        self.clear()
+        self.paths = paths
+        self.initUI()
+
     def on_item_clicked(self) -> None:
         """Emit the selected_index signal when an item is clicked."""
         logger.info(f"PathListWidget: Selected index: {self.currentRow()}")
@@ -47,6 +53,14 @@ class PathListWidget(QListWidget):
     def remove_item(self, index: int) -> None:
         """Remove an item from the widget."""
         self.takeItem(index)
+
+    def disable(self) -> None:
+        """Disable the widget."""
+        self.setEnabled(False)
+
+    def enable(self) -> None:
+        """Enable the widget."""
+        self.setEnabled(True)
 
 
 if __name__ == "__main__":

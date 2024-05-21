@@ -18,6 +18,7 @@ class FileDialog(QDialog):
         hboxlayout = QHBoxLayout()
         self.path_line_edit = QLineEdit()
         self.path_line_edit.setReadOnly(False)
+        self.path_line_edit.textChanged.connect(self.on_path_line_edit_text_changed)
 
         self.browse_button = QPushButton("Browse")
         # Set fixed width to default size
@@ -49,3 +50,9 @@ class FileDialog(QDialog):
             selected_file = file_dialog.selectedFiles()[0]
             self.path_line_edit.setText(selected_file)
             self.filename = selected_file
+
+    @pyqtSlot()
+    def on_path_line_edit_text_changed(self) -> None:
+        """Set the filename when the path line edit text is changed"""
+        logger.info("Path line edit text changed")
+        self.filename = self.path_line_edit.text()

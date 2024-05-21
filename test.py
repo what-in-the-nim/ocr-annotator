@@ -45,7 +45,6 @@ class CropperWidget(QWidget):
         self.selection_rect = QRect()
         self.dragging = False
 
-
     def set_image(self, image: Optional[Image.Image]) -> None:
         """Set the image to the widget."""
         if image is not None:
@@ -54,7 +53,9 @@ class CropperWidget(QWidget):
             self.hires_image = image.copy()
 
             self.thumbnail_image = image.copy()
-            self.thumbnail_image.thumbnail((self.display_label.width(), self.display_label.height()), Image.Resampling.LANCZOS)
+            self.thumbnail_image.thumbnail(
+                (self.display_label.width(), self.display_label.height()), Image.Resampling.LANCZOS
+            )
             self.update_pixmap()
 
     def reset_image(self):
@@ -92,7 +93,7 @@ class CropperWidget(QWidget):
                 painter.setBrush(QBrush(self.area_color))
                 painter.drawRect(self.selection_rect)
 
-                # Draw cross    
+                # Draw cross
                 center = self.selection_rect.center()
                 painter.drawLine(center.x(), 0, center.x(), pixmap.height())
                 painter.drawLine(0, center.y(), pixmap.width(), center.y())
@@ -135,9 +136,7 @@ class CropperWidget(QWidget):
             orig_x2 = int(x2 * self.hires_image.width / self.thumbnail_image.width)
             orig_y2 = int(y2 * self.hires_image.height / self.thumbnail_image.height)
 
-            self.cropped_image = self.hires_image.crop(
-                (orig_x1, orig_y1, orig_x2, orig_y2)
-            )
+            self.cropped_image = self.hires_image.crop((orig_x1, orig_y1, orig_x2, orig_y2))
             self.update_pixmap_with_cropped()
             self.selection_rect = QRect()
 

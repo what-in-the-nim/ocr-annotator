@@ -22,10 +22,17 @@ class Presenter(QObject):
 
         self.is_loaded = False
 
+        self.link_signals()
+
+        logger.info("Presenter initialized")
+
+    def link_signals(self) -> None:
+        """Link signals between the view and the presenter."""
         # Connect signals of AnnotationWidget to the presenter.
         self.view.annotatorWidget.request_rotate_image.connect(self.handle_rotate_image)
         self.view.annotatorWidget.request_change_text.connect(self.handle_change_text)
         self.view.annotatorWidget.request_delete_item.connect(self.handle_delete_item)
+        self.view.annotatorWidget.request_update_items.connect(self.refresh_widget)
 
         self.view.open_selected_file.connect(self.load_file)
 
@@ -35,7 +42,6 @@ class Presenter(QObject):
         self.view.request_delete_item.connect(self.handle_delete_item)
         self.view.request_create_file_dialog.connect(self.view.create_browse_file_dialog)
 
-        logger.info("Presenter initialized")
 
     @pyqtSlot(int)
     def handle_rotate_image(self, index: int) -> None:
@@ -45,7 +51,9 @@ class Presenter(QObject):
         logger.info("Presenter received rotate image request")
         # Rotate the current image.
         self.model.rotate_image(index)
-        self.refresh_widget()
+        # Update the view.
+        current_indices = self.view.annotatorWidget.page_widget.indices
+        self.refresh_widget(current_indices)
 
     @pyqtSlot(int, str)
     def handle_change_text(self, index: int, new_text: str) -> None:
@@ -57,6 +65,8 @@ class Presenter(QObject):
         text = self.model.get_text(index)
         self.view.show_message(f"Text change from {text} to {new_text}")
         self.model.change_text(index, new_text)
+        current_indices = self.view.annotatorWidget.page_widget.indices
+        self.refresh_widget(current_indices)
 
     @pyqtSlot(int)
     def handle_delete_item(self, index: int) -> None:
@@ -65,10 +75,10 @@ class Presenter(QObject):
             return
         logger.info("Presenter received delete row request")
         self.model.delete_item(index)
+        self.view.annotatorWidget.path_list_widget.remove_item(index)
         # Reinitialize the spinbox to match the new length.
         total_items = self.model.length
-        self.view.annotatorWidget.textWidget.initialize_spinbox(total_items)
-        self.refresh_widget()
+        self.view.annotatorWidget.set_total_items(total_items)
 
     @pyqtSlot(str)
     def load_file(self, path: str) -> None:
@@ -88,7 +98,10 @@ class Presenter(QObject):
         # Enable the actions on the toolbar.
         self.view.activate_actions()
         # Enable the spinbox.
-        self.refresh_widget()
+        self.view.annotatorWidget.enable()
+        self.view.annotatorWidget.set_total_items(self.model.length)
+        self.view.annotatorWidget.path_list_widget.set_paths(self.model.paths)
+        self.is_loaded = True
 
     @pyqtSlot()
     def save_file(self) -> None:
@@ -105,29 +118,20 @@ class Presenter(QObject):
         self.model.save_file(save_path)
         self.view.show_message(f"File saved at: {save_path}")
 
-    def refresh_widget(self) -> None:
+    @pyqtSlot(list)
+    def refresh_widget(self, indices: list[int]) -> None:
         """
         When the model state is updated,
         call this function to update the view.
         """
         logger.info("Refreshing widget")
-        total_items = self.model.length
-        self.view.pageWidget.set_total_items(total_items)
 
-        indices = self.view.pageWidget.indices
-
-        print(indices)
-        print(self.model.df)
         images = [self.model.get_image(index) for index in indices]
         texts = [self.model.get_text(index) for index in indices]
         paths = [self.model.get_path(index) for index in indices]
+
         self.view.annotatorWidget.set_images(images)
         self.view.annotatorWidget.set_texts(texts)
         self.view.annotatorWidget.set_paths(paths)
         self.view.annotatorWidget.set_indices(indices, self.model.length)
-        self.is_loaded = True
-        # Return if image is exception raised
-        # self.view.annotatorWidget.set_image(image)
-        # self.view.annotatorWidget.set_text(self.model.text)
-        # self.view.annotatorWidget.set_index(self.model.index)
-        # self.view.annotatorWidget.set_path(self.model.path)
+

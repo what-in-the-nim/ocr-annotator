@@ -3,7 +3,7 @@ import logging
 from PIL import Image
 from PyQt6.QtCore import QMimeData, QPoint, Qt
 from PyQt6.QtGui import QAction, QImage, QPixmap
-from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy
+from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy\
 
 from ...model import ImageHandler
 
@@ -24,10 +24,8 @@ class ImageWidget(QLabel):
         super(ImageWidget, self).__init__()
         self.image = None
         self.path = None
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setContentsMargins(5, 5, 5, 5)
         self.setStyleSheet("border: 1px solid black;")
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Set right click menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -86,11 +84,9 @@ class ImageWidget(QLabel):
         if self.image is None:
             return
 
-        container_size = (self.width(), self.height())
-        self.image = ImageHandler.fit(self.image, container_size)
-
-        # Create a QImage from the padded image data
+        # Resize image to fit the label
         width, height = self.image.size
+        self.image.thumbnail((self.width(), self.height()))
 
         qImg = QImage(
             self.image.tobytes(),
