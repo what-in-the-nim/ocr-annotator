@@ -11,9 +11,7 @@ class ImageHandler:
     def open(path: str) -> Image.Image:
         """Return the current image."""
         if not op.exists(path):
-            return FileNotFoundError(
-                f"File not found: {path}, Please browse directory to solve this."
-            )
+            return FileNotFoundError(f"File not found: {path}, Please browse directory to solve this.")
 
         image = Image.open(path)
         rgb_image = image.convert("RGB")

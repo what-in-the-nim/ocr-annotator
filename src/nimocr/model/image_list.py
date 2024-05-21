@@ -90,9 +90,7 @@ class ImageListModel:
         self.df = self._file_handler.load(path)
         path_valid = self._validate_paths(self.df[self.path_column_name])
         if not path_valid:
-            return FileExistsError(
-                "Some of the paths do not exist or the relative path is incorrect."
-            )
+            return FileExistsError("Some of the paths do not exist or the relative path is incorrect.")
 
     def cast_types(self) -> None:
         # Cast the path to string
@@ -105,9 +103,7 @@ class ImageListModel:
     def normalize_path(self) -> None:
         """Normalize the path."""
         if self.path_column_name not in self.columns:
-            raise ValueError(
-                f"Path column name {self.path_column_name} not found in columns {self.columns}."
-            )
+            raise ValueError(f"Path column name {self.path_column_name} not found in columns {self.columns}.")
 
         self.df = self._file_handler.normalize_path(self.df, self.path_column_name)
 
