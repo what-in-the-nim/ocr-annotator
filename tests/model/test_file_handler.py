@@ -4,10 +4,7 @@ from tempfile import NamedTemporaryFile
 import pandas as pd
 import pytest
 
-from nimocr.model import (  # Replace 'your_module' with the actual module name
-    FileHandler,
-)
-
+from nimocr.model import FileHandler
 
 @pytest.fixture
 def file_handler():

@@ -1,10 +1,7 @@
 import pytest
 from PIL import Image
 
-from nimocr.model import (  # Replace 'your_module' with the actual module name
-    ImageHandler,
-)
-
+from nimocr.model import ImageHandler
 
 @pytest.fixture
 def image_handler():

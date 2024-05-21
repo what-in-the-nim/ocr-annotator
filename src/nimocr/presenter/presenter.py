@@ -33,9 +33,7 @@ class Presenter(QObject):
         self.view.request_save_file.connect(self.save_file)
         self.view.request_image_rotate.connect(self.handle_rotate_image)
         self.view.request_delete_item.connect(self.handle_delete_item)
-        self.view.request_create_file_dialog.connect(
-            self.view.create_browse_file_dialog
-        )
+        self.view.request_create_file_dialog.connect(self.view.create_browse_file_dialog)
 
         logger.info("Presenter initialized")
 
@@ -79,9 +77,7 @@ class Presenter(QObject):
         # Load model from the file path.
         self.model.load_file(path)
         # Get the path column and text column from the user.
-        path_column, text_column = self.view.create_select_column_dialog(
-            self.model.columns
-        )
+        path_column, text_column = self.view.create_select_column_dialog(self.model.columns)
         # Set the path column and text column to the model.
         self.model.set_path_column_name(path_column)
         self.model.set_text_column_name(text_column)
@@ -102,9 +98,7 @@ class Presenter(QObject):
         label_dir = op.dirname(self.model._file_handler.path)
         base_name = FileHandler.get_basename(self.model._file_handler.path)
         current_time = datetime.now().strftime("%Y%m%d_%H%M")
-        save_filename = (
-            f"{base_name}_{current_time}.{self.model._file_handler.extension}"
-        )
+        save_filename = f"{base_name}_{current_time}.{self.model._file_handler.extension}"
         save_path = op.join(label_dir, save_filename)
         save_path = self.view.create_save_file_dialog(save_path)
         # Save model to the save path.
