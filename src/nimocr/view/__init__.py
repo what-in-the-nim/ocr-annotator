@@ -1,21 +1,20 @@
-from .dialog import (
-    AboutDialog,
+from .dialogs import (
     BrowseFileDialog,
-    ConfirmDeleteDialog,
     FileDialog,
     SaveDialog,
     SelectColumnDialog,
 )
+from .message_boxs import AboutMessageBox, ConfirmDeleteMessageBox
 from .main_window import MainWindow
 from .widgets import AnnotatorWidget, ImageWidget, TextWidget
 
 __all__ = [
-    "ConfirmDeleteDialog",
+    "ConfirmDeleteMessageBox",
     "BrowseFileDialog",
     "SelectColumnDialog",
     "FileDialog",
     "SaveDialog",
-    "AboutDialog",
+    "AboutMessageBox",
     "MainWindow",
     "ImageWidget",
     "TextWidget",

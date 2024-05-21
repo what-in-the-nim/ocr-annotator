@@ -2,7 +2,7 @@ import logging
 
 from PIL import Image
 from PyQt6.QtCore import QMimeData, QPoint, Qt
-from PyQt6.QtGui import QAction, QImage, QPixmap, QResizeEvent
+from PyQt6.QtGui import QAction, QImage, QPixmap
 from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy
 
 from ...model import ImageHandler
