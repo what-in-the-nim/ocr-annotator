@@ -2,7 +2,15 @@ import logging
 
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QStyle, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QStyle,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .image import ImageWidget
 from .text import TextWidget
@@ -65,12 +73,16 @@ class ItemWidget(QWidget):
 
         # Create tool widget.
         tool_widget = QWidget()
-        tool_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        tool_widget.setSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
+        )
         tool_layout = QVBoxLayout()
 
         # Create rotate button from logo
         self.rotate_button = QPushButton()
-        self.rotate_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.rotate_button.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+        )
         rotate_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserReload)
         self.rotate_button.setIcon(rotate_icon)
         self.rotate_button.clicked.connect(self._rotate_image)
@@ -78,7 +90,9 @@ class ItemWidget(QWidget):
 
         # Create trash button from logo
         self.trash_button = QPushButton()
-        self.trash_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.trash_button.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+        )
         trash_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TrashIcon)
         self.trash_button.setIcon(trash_icon)
         self.trash_button.clicked.connect(self._delete_item)
@@ -86,7 +100,9 @@ class ItemWidget(QWidget):
 
         # Create index/total label
         self.index_label = QLabel("-")
-        self.index_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.index_label.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+        )
         tool_layout.addWidget(self.index_label)
         tool_layout.addStretch()
         tool_widget.setLayout(tool_layout)
@@ -147,6 +163,7 @@ class ItemWidget(QWidget):
         self.rotate_button.setEnabled(True)
         self.trash_button.setEnabled(True)
         self.text_widget.enable()
+
 
 if __name__ == "__main__":
     import sys

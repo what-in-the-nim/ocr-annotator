@@ -79,7 +79,7 @@ class ImageListModel:
     def columns(self) -> tuple[str, ...]:
         """Return the columns of the dataframe."""
         return tuple(self.df.columns)
-    
+
     @property
     def paths(self) -> list[str]:
         """Return the paths in the dataframe."""
@@ -95,20 +95,24 @@ class ImageListModel:
         self.df = self._file_handler.load(path)
         path_valid = self._validate_paths(self.df[self.path_column_name])
         if not path_valid:
-            return FileExistsError("Some of the paths do not exist or the relative path is incorrect.")
+            return FileExistsError(
+                "Some of the paths do not exist or the relative path is incorrect."
+            )
 
     def cast_types(self) -> None:
         # Cast the path to string
         self.df[self.path_column_name] = self.df[self.path_column_name].astype(str)
         # Replace NaN with empty string
-        self.df[self.text_column_name].fillna("", inplace=True)
+        self.df[self.text_column_name] = self.df[self.text_column_name].fillna("")
         # Cast the text to string
         self.df[self.text_column_name] = self.df[self.text_column_name].astype(str)
 
     def normalize_path(self) -> None:
         """Normalize the path."""
         if self.path_column_name not in self.columns:
-            raise ValueError(f"Path column name {self.path_column_name} not found in columns {self.columns}.")
+            raise ValueError(
+                f"Path column name {self.path_column_name} not found in columns {self.columns}."
+            )
 
         self.df = self._file_handler.normalize_path(self.df, self.path_column_name)
 
@@ -143,7 +147,7 @@ class ImageListModel:
 
     def change_text(self, index: int, text: str) -> None:
         """Set the text of the current image."""
-        self.df.iloc[index][self.text_column_name] = text
+        self.df.at[index, self.text_column_name] = text
 
     def set_path_column_name(self, path_column_name: str) -> None:
         """Set the path column name."""

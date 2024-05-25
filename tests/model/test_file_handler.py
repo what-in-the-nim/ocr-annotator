@@ -6,6 +6,7 @@ import pytest
 
 from nimocr.model import FileHandler
 
+
 @pytest.fixture
 def file_handler():
     return FileHandler()

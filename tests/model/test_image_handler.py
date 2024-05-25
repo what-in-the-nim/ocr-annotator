@@ -3,6 +3,7 @@ from PIL import Image
 
 from nimocr.model import ImageHandler
 
+
 @pytest.fixture
 def image_handler():
     return ImageHandler()

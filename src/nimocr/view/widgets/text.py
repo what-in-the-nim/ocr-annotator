@@ -33,7 +33,8 @@ class TextWidget(QLineEdit):
 
     def keyPressEvent(self, event) -> None:
         """When user press enter, does like user clear focus."""
-        if event.key() == Qt.Key.Key_Enter:
+        key_pressed = event.key()
+        if key_pressed == Qt.Key.Key_Enter or key_pressed == Qt.Key.Key_Return:
             self.clearFocus()
         super().keyPressEvent(event)
 

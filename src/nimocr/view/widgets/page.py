@@ -1,8 +1,10 @@
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSpinBox, QStyle, QWidget
 import logging
 
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSpinBox, QStyle, QWidget
+
 logger = logging.getLogger(__name__)
+
 
 class PageWidget(QWidget):
     """
@@ -38,6 +40,7 @@ class PageWidget(QWidget):
         prev_page() -> None:
             Go to the previous page.
     """
+
     request_update_items = pyqtSignal(list)
 
     def __init__(self, items_per_page: int, total_items: int = 0) -> None:
@@ -105,13 +108,13 @@ class PageWidget(QWidget):
     def total_pages(self) -> int:
         """Return the total pages."""
         return (self.total_items + self.items_per_page - 1) // self.items_per_page
-    
+
     def _handle_spinbox(self, text: str) -> None:
         """Handle spinbox text value before emitting the signal."""
         page = int(text)
         self.go_to_page(page)
         logger.info(f"Page spinbox value changed to {page}")
-    
+
     def _update_indices(self) -> None:
         """Update the indices."""
         start = (self.current_page - 1) * self.items_per_page
@@ -127,7 +130,7 @@ class PageWidget(QWidget):
         # Ensure the current page is within the valid range
         if self.current_page > self.total_pages:
             self.current_page = self.total_pages
-            
+
         # Update the page spinbox value
         self.page_spinbox.setValue(self.current_page)
         self._update_indices()
@@ -197,6 +200,7 @@ class PageWidget(QWidget):
         self.prev_page_button.setEnabled(True)
         self.next_page_button.setEnabled(True)
         self.page_spinbox.setEnabled(True)
+
 
 if __name__ == "__main__":
     import sys

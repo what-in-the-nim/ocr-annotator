@@ -3,7 +3,7 @@ import logging
 from PIL import Image
 from PyQt6.QtCore import QMimeData, QPoint, Qt
 from PyQt6.QtGui import QAction, QImage, QPixmap
-from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy\
+from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy
 
 from ...model import ImageHandler
 
@@ -29,21 +29,32 @@ class ImageWidget(QLabel):
 
         # Set right click menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.showMenu)
+        self.customContextMenuRequested.connect(self._show_menu)
 
         logger.info("Image widget initialized")
 
-    def showMenu(self, pos: QPoint) -> None:
+    def set_image(self, image: Image.Image) -> None:
+        """Set the image in the imageWidget."""
+        logger.info("Image widget received image")
+        self.image = image
+        self._update_image()
+
+    def set_path(self, path: str) -> None:
+        """Set the path of the image."""
+        logger.info("Image widget received path")
+        self.path = path
+
+    def _show_menu(self, pos: QPoint) -> None:
         """Show the right click menu."""
         logger.info(f"Image widget received right click at {pos}")
         # Create the menu
         menu = QMenu(self)
         # Create copy action
         copy_action = QAction("Copy Image", self)
-        copy_action.triggered.connect(self.copy_image)
+        copy_action.triggered.connect(self._copy_image)
         # Create open property action
         open_property_action = QAction("Properties", self)
-        open_property_action.triggered.connect(self.open_property)
+        open_property_action.triggered.connect(self._open_property)
         # Add copy action to the menu
         menu.addAction(copy_action)
         # Add open property action to the menu
@@ -51,7 +62,7 @@ class ImageWidget(QLabel):
         # Show the menu
         menu.exec(self.mapToGlobal(pos))
 
-    def copy_image(self) -> None:
+    def _copy_image(self) -> None:
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
         data = QMimeData()
@@ -59,18 +70,7 @@ class ImageWidget(QLabel):
         clipboard = QApplication.clipboard()
         clipboard.setMimeData(data)
 
-    def set_image(self, image: Image.Image) -> None:
-        """Set the image in the imageWidget."""
-        logger.info("Image widget received image")
-        self.image = image
-        self.update_image()
-
-    def set_path(self, path: str) -> None:
-        """Set the path of the image."""
-        logger.info("Image widget received path")
-        self.path = path
-
-    def open_property(self) -> None:
+    def _open_property(self) -> None:
         """Open propery dialog and show the path when right click on the image"""
         logger.info("Image widget received open property request")
         # Create message box
@@ -79,7 +79,7 @@ class ImageWidget(QLabel):
         msg.setText(f"Path: {self.path}")
         msg.exec()
 
-    def update_image(self) -> None:
+    def _update_image(self) -> None:
         """Update the image in the imageWidget."""
         if self.image is None:
             return

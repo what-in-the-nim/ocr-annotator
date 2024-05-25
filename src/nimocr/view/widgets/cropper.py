@@ -7,13 +7,17 @@ from PyQt6.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
 
 
-class CropperWidget(QWidget):
+class ImageCropper(QWidget):
+
+    AREA_COLOR = QColor(0, 0, 0, 50)
+    CROSS_COLOR = QColor(255, 0, 0)
+
     def __init__(
         self,
         image: Optional[Image.Image] = None,
         size: Optional[QPoint] = None,
-        area_color: QColor = QColor(0, 0, 0, 50),
-        cross_color: QColor = QColor(255, 0, 0),
+        area_color: Optional[QColor] = None,
+        cross_color: Optional[QColor] = None,
     ):
         super().__init__()
         self.init_ui()
@@ -22,8 +26,8 @@ class CropperWidget(QWidget):
             self.resize(*size)
             self.setFixedSize(*size)
 
-        self.area_color = area_color
-        self.cross_color = cross_color
+        self.area_color = area_color if area_color is not None else self.AREA_COLOR
+        self.cross_color = cross_color if cross_color is not None else self.CROSS_COLOR
         self.original_image = None
         self.thumbnail_image = None
         self.hires_image = None
@@ -34,7 +38,10 @@ class CropperWidget(QWidget):
         layout = QVBoxLayout()
 
         self.display_label = QLabel()
-        layout.addWidget(self.display_label, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(
+            self.display_label,
+            alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft,
+        )
 
         self.reset_button = QPushButton("Reset")
         self.reset_button.clicked.connect(self.reset_image)
@@ -54,7 +61,8 @@ class CropperWidget(QWidget):
 
             self.thumbnail_image = image.copy()
             self.thumbnail_image.thumbnail(
-                (self.display_label.width(), self.display_label.height()), Image.Resampling.LANCZOS
+                (self.display_label.width(), self.display_label.height()),
+                Image.Resampling.LANCZOS,
             )
             self.update_pixmap()
 
@@ -63,7 +71,9 @@ class CropperWidget(QWidget):
             self.hires_image = self.original_image.copy()
 
             self.thumbnail_image = self.original_image.copy()
-            self.thumbnail_image.thumbnail((self.width(), self.height()), Image.Resampling.LANCZOS)
+            self.thumbnail_image.thumbnail(
+                (self.width(), self.height()), Image.Resampling.LANCZOS
+            )
 
             self.update_pixmap()
             self.selection_rect = QRect()
@@ -79,7 +89,9 @@ class CropperWidget(QWidget):
         """Resize the image when the widget is resized."""
         super().resizeEvent(event)
         if self.thumbnail_image:
-            self.thumbnail_image.thumbnail((self.width(), self.height()), Image.Resampling.LANCZOS)
+            self.thumbnail_image.thumbnail(
+                (self.width(), self.height()), Image.Resampling.LANCZOS
+            )
             self.update_pixmap()
 
     def paintEvent(self, event):
@@ -136,7 +148,9 @@ class CropperWidget(QWidget):
             orig_x2 = int(x2 * self.hires_image.width / self.thumbnail_image.width)
             orig_y2 = int(y2 * self.hires_image.height / self.thumbnail_image.height)
 
-            self.cropped_image = self.hires_image.crop((orig_x1, orig_y1, orig_x2, orig_y2))
+            self.cropped_image = self.hires_image.crop(
+                (orig_x1, orig_y1, orig_x2, orig_y2)
+            )
             self.update_pixmap_with_cropped()
             self.selection_rect = QRect()
 
@@ -155,7 +169,7 @@ class CropperWidget(QWidget):
 def main():
     app = QApplication(sys.argv)
     input_image = Image.open("20240302_105643.jpg")
-    cropper = CropperWidget(
+    cropper = ImageCropper(
         image=input_image,
         size=(800, 600),
         area_color=QColor(0, 255, 0, 50),

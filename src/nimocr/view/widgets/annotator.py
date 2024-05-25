@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QLayout, QSplitter, QVBoxLayout, QWidget, QSizePolicy
+from PyQt6.QtWidgets import QLayout, QSizePolicy, QSplitter, QVBoxLayout, QWidget
 
 from .item import ItemWidget
 from .page import PageWidget
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class AnnotatorWidget(QWidget):
     """
-    ANnotator widget for displaying images and texts. It contains multiple item widgets.
+    Annotator widget for displaying images and texts. It contains multiple item widgets.
 
     Attributes:
     ----------

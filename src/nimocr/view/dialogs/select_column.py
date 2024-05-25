@@ -28,11 +28,15 @@ class SelectColumnDialog(QDialog):
 
         self.path_combo_box = QComboBox()
         self.path_combo_box.addItems(self.column_names)
-        self.path_combo_box.activated.connect(self.on_path_combo_box_current_index_changed)
+        self.path_combo_box.activated.connect(
+            self.on_path_combo_box_current_index_changed
+        )
 
         self.text_combo_box = QComboBox()
         self.text_combo_box.addItems(self.column_names)
-        self.text_combo_box.activated.connect(self.on_text_combo_box_current_index_changed)
+        self.text_combo_box.activated.connect(
+            self.on_text_combo_box_current_index_changed
+        )
 
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.accept)

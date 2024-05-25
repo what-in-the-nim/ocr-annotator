@@ -2,7 +2,16 @@ import logging
 
 from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QIcon, QKeySequence
-from PyQt6.QtWidgets import QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox, QSpinBox, QStatusBar, QToolButton
+from PyQt6.QtWidgets import (
+    QLineEdit,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QMessageBox,
+    QSpinBox,
+    QStatusBar,
+    QToolButton,
+)
 
 from .dialogs import FileDialog, SaveDialog, SelectColumnDialog
 from .message_boxs import AboutMessageBox, ConfirmDeleteMessageBox
@@ -89,13 +98,17 @@ class MainWindow(QMainWindow):
 
         # Add previous button on tool bar
         self.prevAction = self.toolBar.addAction("Prev")
-        self.prevAction.setShortcut(QKeySequence(Qt.Key.Key_Left))  # Set the left arrow key shortcut
+        self.prevAction.setShortcut(
+            QKeySequence(Qt.Key.Key_Left)
+        )  # Set the left arrow key shortcut
         self.prevAction.setEnabled(False)
         self.prevAction.triggered.connect(self.request_prev_image.emit)
 
         # Add next button on tool bar
         self.nextAction = self.toolBar.addAction("Next")
-        self.nextAction.setShortcut(QKeySequence(Qt.Key.Key_Right))  # Set the right arrow key shortcut
+        self.nextAction.setShortcut(
+            QKeySequence(Qt.Key.Key_Right)
+        )  # Set the right arrow key shortcut
         self.nextAction.setEnabled(False)
         self.nextAction.triggered.connect(self.request_next_image.emit)
 
@@ -109,7 +122,9 @@ class MainWindow(QMainWindow):
         self.ascending_action = self.sortOrderMenu.addAction("Ascending")
         self.descending_action = self.sortOrderMenu.addAction("Descending")
         self.sortOrderToolButton = QToolButton()
-        self.sortOrderToolButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.sortOrderToolButton.setPopupMode(
+            QToolButton.ToolButtonPopupMode.InstantPopup
+        )
         self.sortOrderToolButton.setMenu(self.sortOrderMenu)
 
         # Create sort by menu
