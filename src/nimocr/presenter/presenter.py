@@ -2,6 +2,7 @@ import logging
 import os.path as op
 from datetime import datetime
 
+import prettytable
 from PyQt6.QtCore import QObject, pyqtSlot
 
 from ..model import FileHandler, ImageListModel
@@ -54,8 +55,7 @@ class Presenter(QObject):
         # Rotate the current image.
         self.model.rotate_image(index)
         # Update the view.
-        current_indices = self.view.annotatorWidget.page_widget.indices
-        self.refresh_widget(current_indices)
+        self.refresh_widget()
 
     @pyqtSlot(int, str)
     def handle_change_text(self, index: int, new_text: str) -> None:
@@ -70,8 +70,7 @@ class Presenter(QObject):
         self.view.show_message(
             f"Text change from {text} to {self.model.get_text(index)}"
         )
-        current_indices = self.view.annotatorWidget.page_widget.indices
-        self.refresh_widget(current_indices)
+        self.refresh_widget()
 
     @pyqtSlot(int)
     def handle_delete_item(self, index: int) -> None:
@@ -80,11 +79,17 @@ class Presenter(QObject):
             return
 
         logger.info("Presenter received delete row request")
+        # Update backend model.
         self.model.delete_item(index)
+        # Update the view.
+        ## Remove the item from the path list widget.
         self.view.annotatorWidget.path_list_widget.remove_item(index)
-        # Reinitialize the spinbox to match the new length.
+        ## Update the total items in the page widget.
         total_items = self.model.length
         self.view.annotatorWidget.set_total_items(total_items)
+        ## Update the indices in the page widget.
+        self.view.annotatorWidget.page_widget.remove_index(index)
+        self.refresh_widget()
 
     @pyqtSlot(str)
     def load_file(self, path: str) -> None:
@@ -103,13 +108,17 @@ class Presenter(QObject):
         self.model.cast_types()
         # Normalize the path.
         self.model.normalize_path()
+        self.is_loaded = True
         # Enable the actions on the toolbar.
         self.view.activate_actions()
         # Enable the spinbox.
         self.view.annotatorWidget.enable()
         self.view.annotatorWidget.set_total_items(self.model.length)
+        self.view.annotatorWidget.page_widget.reset_indices()
+        self.view.annotatorWidget.page_widget.update_label()
+
         self.view.annotatorWidget.path_list_widget.set_paths(self.model.paths)
-        self.is_loaded = True
+        self.refresh_widget()
 
     @pyqtSlot()
     def save_file(self) -> None:
@@ -129,18 +138,35 @@ class Presenter(QObject):
         self.view.show_message(f"File saved at: {save_path}")
 
     @pyqtSlot(list)
-    def refresh_widget(self, indices: list[int]) -> None:
+    def refresh_widget(self) -> None:
         """
         When the model state is updated,
         call this function to update the view.
         """
+        indices = self.view.annotatorWidget.page_widget.indices
         logger.info(f"Refreshing widget: {indices}")
 
         images = [self.model.get_image(index) for index in indices]
         texts = [self.model.get_text(index) for index in indices]
         paths = [self.model.get_path(index) for index in indices]
 
+        df = self.model.df
+        table = prettytable.PrettyTable()
+        table.field_names = ["index", "path", "text"]
+        for i in indices:
+            table.add_row([i, df["path"][i], df["text"][i]])
+
+        logger.info(f"Table: {table}")
+        logger.info(f"Texts: {texts}")
+        logger.info(f"Paths: {paths}")
+
         self.view.annotatorWidget.set_images(images)
         self.view.annotatorWidget.set_texts(texts)
         self.view.annotatorWidget.set_paths(paths)
-        self.view.annotatorWidget.set_indices(indices, self.model.length)
+        self.view.annotatorWidget.set_indices(indices)
+
+        if len(indices) < 3:
+            rest_indices = 3 - len(indices)
+            # Set the rest of the widgets to empty.
+            for i in range(rest_indices):
+                self.view.annotatorWidget.item_widgets[-1 - i].set_empty()

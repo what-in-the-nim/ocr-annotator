@@ -44,7 +44,7 @@ class AnnotatorWidget(QWidget):
     request_delete_item = pyqtSignal(int)
     request_update_items = pyqtSignal(list)
 
-    def __init__(self, item_per_page: int = 4) -> None:
+    def __init__(self, item_per_page: int = 3) -> None:
         super().__init__()
         # Set the item per page
         self.item_per_page = item_per_page
@@ -113,10 +113,30 @@ class AnnotatorWidget(QWidget):
         """Set the total number of items."""
         self.page_widget.set_total_items(total)
 
+    def set_image(self, index: int, image: np.ndarray) -> None:
+        """Set the image in the image widget."""
+        self.item_widgets[index].set_image(image)
+
+    def set_text(self, index: int, text: str) -> None:
+        """Set the text in the text widget."""
+        self.item_widgets[index].set_text(text)
+
+    def set_path(self, index: int, path: str) -> None:
+        """Set the path in the image widget."""
+        self.item_widgets[index].set_path(path)
+
+    def set_index(self, index: int, item_index: int) -> None:
+        """Set the index and total in the index label."""
+        self.item_widgets[index].set_index(item_index)
+
     def set_images(self, images: np.ndarray) -> None:
         """Set the images in the image widgets."""
         for widget, image in zip(self.item_widgets, images):
             widget.set_image(image)
+
+    def set_empty(self, index: int) -> None:
+        """Set the widgets to empty."""
+        self.item_widgets[index].set_empty()
 
     def set_texts(self, texts: list[str]) -> None:
         """Set the texts in the text widgets."""
@@ -128,10 +148,10 @@ class AnnotatorWidget(QWidget):
         for widget, path in zip(self.item_widgets, paths):
             widget.set_path(path)
 
-    def set_indices(self, indices: list[int], total: int) -> None:
+    def set_indices(self, indices: list[int]) -> None:
         """Set the index and total in the index label."""
         for index, widget in zip(indices, self.item_widgets):
-            widget.set_index(index, total)
+            widget.set_index(index)
 
     def disable(self) -> None:
         """Disable the widget."""

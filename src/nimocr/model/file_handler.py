@@ -59,6 +59,16 @@ class FileHandler:
         )
         return df
 
+    def common_path(self, df: DataFrame, path_column_name: str) -> DataFrame:
+        """Remove the common path from the path."""
+        # Get the common path
+        common_path = op.commonpath(df[path_column_name].tolist())
+        # Remove the common path
+        df[path_column_name] = df[path_column_name].apply(
+            lambda x: op.relpath(x, common_path)
+        )
+        return df
+
     def save(self, df: DataFrame, filename: Optional[str] = None) -> None:
         """Save the dataframe to a file."""
         if filename is None:

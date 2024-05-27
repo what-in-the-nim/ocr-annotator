@@ -50,12 +50,25 @@ class PageWidget(QWidget):
         self.total_items = total_items
 
         self.current_page = 1
-        self._indices = [i for i in range(min(self.items_per_page, self.total_items))]
+        self._page = []
+
+        if self.total_items > 0 and self.items_per_page > 0:
+            self.reset_indices()
 
         self.initUI()
         self.disable()
 
         logger.info("PageWidget initialized")
+
+    def reset_indices(self) -> list[list[int]]:
+        """Return the indices of the items in each page."""
+        indices = []
+        for i in range(0, self.total_items, self.items_per_page):
+            indices.append(
+                list(range(i, min(i + self.items_per_page, self.total_items)))
+            )
+        self._page = indices
+        logger.info(f"Indices: {self._page}")
 
     def initUI(self) -> None:
         """Set up the user interface."""
@@ -102,12 +115,12 @@ class PageWidget(QWidget):
     @property
     def indices(self) -> list[int]:
         """Return the indices."""
-        return self._indices
+        return self._page[self.current_page - 1]
 
     @property
     def total_pages(self) -> int:
         """Return the total pages."""
-        return (self.total_items + self.items_per_page - 1) // self.items_per_page
+        return len(self._page)
 
     def _handle_spinbox(self, text: str) -> None:
         """Handle spinbox text value before emitting the signal."""
@@ -115,53 +128,78 @@ class PageWidget(QWidget):
         self.go_to_page(page)
         logger.info(f"Page spinbox value changed to {page}")
 
-    def _update_indices(self) -> None:
-        """Update the indices."""
-        start = (self.current_page - 1) * self.items_per_page
-        end = min(start + self.items_per_page, self.total_items)
-        self._indices = [i for i in range(start, end)]
-
     def set_total_items(self, total_items: int) -> None:
         """Set the total items."""
+        # Update the total items
         self.total_items = total_items
+
+    def update_label(self) -> None:
+        # Update the label and spinbox
         self.total_page_label.setText(f"/{self.total_pages}")
         self.page_spinbox.setRange(1, self.total_pages)
 
         # Ensure the current page is within the valid range
-        if self.current_page > self.total_pages:
+        if self.current_page > self.total_pages and self.total_pages > 0:
             self.current_page = self.total_pages
 
         # Update the page spinbox value
         self.page_spinbox.setValue(self.current_page)
-        self._update_indices()
-        # Request to update items
-        self.request_update_items.emit(self._indices)
 
-    def set_items_per_page(self, items_per_page: int) -> None:
-        """Set the items per page."""
-        self.items_per_page = items_per_page
-        self.page_spinbox.setRange(1, self.total_pages)
-        self.page_spinbox.setValue(self.current_page)
-        self._update_indices()
-        # Request to update items
-        self.request_update_items.emit(self._indices)
+        logger.info(f"Total items: {self.total_items}")
+        logger.info(f"Total pages: {self.total_pages}")
+        logger.info(f"Current page: {self.current_page}")
 
     def go_to_page(self, page: int) -> None:
         """Go to the specified page."""
         if 1 <= page <= self.total_pages:
             self.current_page = page
-            self._update_indices()
             # Request to update items
-            self.request_update_items.emit(self._indices)
+            self.request_update_items.emit(self.indices)
 
             logger.info(f"Go to page {page}")
             logger.info(f"Current page: {self.current_page}")
-            logger.info(f"Indices: {self._indices}")
+            logger.info(f"Indices: {self.indices}")
 
     def go_to_index(self, index: int) -> None:
         """Go to the page that contains the specified index."""
-        page = (index + self.items_per_page - 1) // self.items_per_page
-        self.go_to_page(page)
+        # Find which page contains the index
+        page_index = None
+        for i, page in enumerate(self._page):
+            if index in page:
+                page_index = i
+                break
+        self.current_page = page_index + 1
+        self.page_spinbox.setValue(self.current_page)
+        # Update indices and request to update items
+        self.request_update_items.emit(self.indices)
+
+    def remove_index(self, index_to_remove: int) -> None:
+        """Remove the index from the page and shift the indices."""
+        logger.info(f"Removing index {index_to_remove}")
+        logger.info(f"Pages: {self._page}")
+        # Flatten the list of pages into a single list
+        flat_list = [item for sublist in self._page for item in sublist]
+
+        # Remove the specified index
+        flat_list.remove(index_to_remove)
+
+        # Reshape the list back into pages
+        new_pages = []
+        for i in range(0, len(flat_list), self.items_per_page):
+            new_pages.append(flat_list[i:i + self.items_per_page])
+
+        # Remove empty page if it exists at the end
+        if new_pages and not new_pages[-1]:
+            new_pages.pop()
+
+        self._page = new_pages
+        # Make sure the current page is within the valid range
+        if self.current_page > self.total_pages:
+            self.current_page = self.total_pages
+            self.page_spinbox.setValue(self.current_page)
+            self.update_label()
+
+        logger.info(f"Pages after removing index: {self._page}")
 
     def next_page(self) -> None:
         """Go to the next page."""
@@ -169,12 +207,11 @@ class PageWidget(QWidget):
             self.current_page += 1
             self.page_spinbox.setValue(self.current_page)
             # Update indices and request to update items
-            self._update_indices()
-            self.request_update_items.emit(self._indices)
+            self.request_update_items.emit(self.indices)
 
             logger.info("Next page button clicked")
             logger.info(f"Current page: {self.current_page}")
-            logger.info(f"Indices: {self._indices}")
+            logger.info(f"Indices: {self.indices}")
 
     def prev_page(self) -> None:
         """Go to the previous page."""
@@ -182,12 +219,11 @@ class PageWidget(QWidget):
             self.current_page -= 1
             self.page_spinbox.setValue(self.current_page)
             # Update indices and request to update items
-            self._update_indices()
-            self.request_update_items.emit(self._indices)
+            self.request_update_items.emit(self.indices)
 
             logger.info("Previous page button clicked")
             logger.info(f"Current page: {self.current_page}")
-            logger.info(f"Indices: {self._indices}")
+            logger.info(f"Indices: {self.indices}")
 
     def disable(self) -> None:
         """Disable the buttons."""

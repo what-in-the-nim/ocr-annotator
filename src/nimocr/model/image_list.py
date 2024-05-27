@@ -1,3 +1,4 @@
+import logging
 import os.path as op
 from dataclasses import dataclass, field
 from typing import Iterable
@@ -8,17 +9,7 @@ from PIL import Image
 from .file_handler import FileHandler
 from .image_handler import ImageHandler
 
-
-class ImageListSortType:
-    """Enum for the sort type.
-
-    Attributes:
-        CER (str): Sort by CER.
-        LENGTH (str): Sort by length.
-    """
-
-    CER = "cer"
-    LENGTH = "length"
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -118,20 +109,21 @@ class ImageListModel:
 
     def save_file(self, path: str) -> None:
         """Save the current list to a csv file."""
-        self._file_handler.save(self.df, filename=path)
+        df = self._file_handler.common_path(self.df, self.path_column_name)
+        self._file_handler.save(df, filename=path)
 
     def get_image(self, index: int) -> Image.Image:
         """Return the image at the given index."""
-        path = self.df.iloc[index][self.path_column_name]
+        path = self.get_path(index)
         return self._image_handler.open(path)
 
     def get_text(self, index: int) -> str:
         """Return the text at the given index."""
-        return self.df.iloc[index][self.text_column_name]
+        return self.df[self.text_column_name][index]
 
     def get_path(self, index: int) -> str:
         """Return the path at the given index."""
-        return self.df.iloc[index][self.path_column_name]
+        return self.df[self.path_column_name][index]
 
     def rotate_image(self, index: int) -> None:
         """Rotate image at the given index."""
@@ -142,8 +134,8 @@ class ImageListModel:
 
     def delete_item(self, index: int) -> None:
         """Delete the row at the given index."""
+        # Drop the row
         self.df.drop(index, inplace=True)
-        self.df.reset_index(drop=True, inplace=True)
 
     def change_text(self, index: int, text: str) -> None:
         """Set the text of the current image."""

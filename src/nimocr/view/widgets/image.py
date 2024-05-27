@@ -1,16 +1,23 @@
 import logging
+from typing import Optional
 
 from PIL import Image
-from PyQt6.QtCore import QMimeData, QPoint, Qt
+from PyQt6.QtCore import QEvent, QMimeData, QPoint, Qt
 from PyQt6.QtGui import QAction, QImage, QPixmap
-from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSizePolicy
-
-from ...model import ImageHandler
+from PyQt6.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMenu,
+    QMessageBox,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class ImageWidget(QLabel):
+class ImageWidget(QWidget):
     """
     ImageWidget for displaying images.
 
@@ -20,23 +27,41 @@ class ImageWidget(QLabel):
         path: The path of the image.
     """
 
-    def __init__(self):
+    def __init__(
+        self, image: Optional[Image.Image] = None, path: Optional[str] = None
+    ) -> None:
         super(ImageWidget, self).__init__()
-        self.image = None
-        self.path = None
-        self.setStyleSheet("border: 1px solid black;")
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
+        self._label = QLabel(self)
+        self.image = image
+        self.path = path
+        # self.setStyleSheet("border: 1px solid black;")
+        self._label.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding
+        )
         # Set right click menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self._show_menu)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self._label)
+        self.setLayout(layout)
 
         logger.info("Image widget initialized")
 
     def set_image(self, image: Image.Image) -> None:
         """Set the image in the imageWidget."""
         logger.info("Image widget received image")
-        self.image = image
+        self.image = image.convert("RGB")
+
+        qImg = QImage(
+            image.tobytes(),
+            image.width,
+            image.height,
+            image.width * 3,  # Assuming RGB
+            QImage.Format.Format_RGB888,
+        )
+        pixmap = QPixmap.fromImage(qImg)
+        self._label.setPixmap(pixmap)
         self._update_image()
 
     def set_path(self, path: str) -> None:
@@ -66,7 +91,7 @@ class ImageWidget(QLabel):
         """Copy the image to the clipboard."""
         logger.info("Image widget received copy image request")
         data = QMimeData()
-        data.setImageData(self.pixmap().toImage())
+        data.setImageData(self._label.pixmap().toImage())
         clipboard = QApplication.clipboard()
         clipboard.setMimeData(data)
 
@@ -84,16 +109,40 @@ class ImageWidget(QLabel):
         if self.image is None:
             return
 
-        # Resize image to fit the label
-        width, height = self.image.size
-        self.image.thumbnail((self.width(), self.height()))
-
-        qImg = QImage(
-            self.image.tobytes(),
-            width,
-            height,
-            3 * width,
-            QImage.Format.Format_RGB888,
+        # Resize pixmap to fit the label
+        pixmap = self._label.pixmap()
+        width, height = self._label.width(), self._label.height()
+        scaled_pixmap = pixmap.scaled(
+            width - 5,
+            max(height - 5, 5),
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
         )
-        pixmap = QPixmap.fromImage(qImg)
-        self.setPixmap(pixmap)
+        self._label.setPixmap(scaled_pixmap)
+
+    def resizeEvent(self, event: QEvent) -> None:
+        """Handle the resize event."""
+        logger.info("Image widget resized")
+        self._update_image()
+        super().resizeEvent(event)
+
+    def set_empty(self) -> None:
+        """Set the widget to be empty."""
+        logger.info("Image widget set to empty")
+        self.image = Image.new("RGB", (10, 10), (255, 255, 255))
+        self._label.clear()
+
+
+if __name__ == "__main__":
+    import sys
+
+    from PyQt6.QtWidgets import QApplication, QMainWindow
+
+    app = QApplication(sys.argv)
+    window = QMainWindow()
+    image_widget = ImageWidget()
+    image = Image.new("RGB", (100, 100), (255, 0, 255))
+    image_widget.set_image(image)
+    window.setCentralWidget(image_widget)
+    window.show()
+    sys.exit(app.exec())

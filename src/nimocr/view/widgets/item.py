@@ -1,19 +1,22 @@
 import logging
 
 import numpy as np
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
     QSizePolicy,
     QStyle,
+    QMessageBox,
     QVBoxLayout,
     QWidget,
 )
 
 from .image import ImageWidget
 from .text import TextWidget
+from ..message_boxs import ConfirmDeleteMessageBox
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +80,11 @@ class ItemWidget(QWidget):
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
         )
         tool_layout = QVBoxLayout()
+        # Create path label
+        font = QFont("IBM Plex Sans Thai", 12)
+        self.path_label = QLabel()
+        self.path_label.setFont(font)
+        item_layout.addWidget(self.path_label)
 
         # Create rotate button from logo
         self.rotate_button = QPushButton()
@@ -122,8 +130,12 @@ class ItemWidget(QWidget):
 
     def _delete_item(self) -> None:
         """Emit the request_delete_item signal."""
-        logger.info("Delete item request sent")
-        self.request_delete_item.emit(self.index)
+        confirm_dialog = ConfirmDeleteMessageBox(self)
+        result = confirm_dialog.exec()
+
+        if result == QMessageBox.StandardButton.Yes:
+            logger.info(f"Delete item request sent for index: {self.index}")
+            self.request_delete_item.emit(self.index)
 
     def _rotate_image(self) -> None:
         """Emit the request_image_rotate signal."""
@@ -146,11 +158,19 @@ class ItemWidget(QWidget):
     def set_path(self, path: str) -> None:
         """Set the path in the image widget."""
         self.image_widget.set_path(path)
+        self.path_label.setText(path)
 
-    def set_index(self, index: int, total: int) -> None:
+    def set_index(self, index: int) -> None:
         """Set the index and total in the index label."""
         self.index = index
         self.index_label.setText(f"{index}")
+
+    def set_empty(self) -> None:
+        """Set the widget to be empty."""
+        self.image_widget.set_empty()
+        self.text_widget.setText("")
+        self.path_label.setText("")
+        self.index_label.setText("-")
 
     def disable(self) -> None:
         """Set the widget to be disabled."""
@@ -163,7 +183,6 @@ class ItemWidget(QWidget):
         self.rotate_button.setEnabled(True)
         self.trash_button.setEnabled(True)
         self.text_widget.enable()
-
 
 if __name__ == "__main__":
     import sys

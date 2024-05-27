@@ -1,20 +1,17 @@
 import logging
 
-from PyQt6.QtCore import QEvent, Qt, pyqtSignal
-from PyQt6.QtGui import QIcon, QKeySequence
+from PyQt6.QtCore import QEvent, pyqtSignal
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
     QLineEdit,
     QMainWindow,
-    QMenu,
     QMenuBar,
-    QMessageBox,
     QSpinBox,
     QStatusBar,
-    QToolButton,
 )
 
 from .dialogs import FileDialog, SaveDialog, SelectColumnDialog
-from .message_boxs import AboutMessageBox, ConfirmDeleteMessageBox
+from .message_boxs import AboutMessageBox
 from .widgets import AnnotatorWidget
 
 logger = logging.getLogger(__name__)
@@ -22,8 +19,6 @@ logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     open_selected_file = pyqtSignal(str)
-    request_next_image = pyqtSignal()
-    request_prev_image = pyqtSignal()
     request_save_file = pyqtSignal()
     request_image_rotate = pyqtSignal(int)
     request_delete_item = pyqtSignal(int)
@@ -67,18 +62,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.statusBar)
 
     def _setup_toolbar(self) -> None:
-        """
-        Add toolbar to the main window.
-
-        The toolbar contains the following actions:
-        - Load: Load a file
-        - Save: Save the current file
-        - Prev: Go to the previous image
-        - Next: Go to the next image
-        - Sort: Sort the images
-            - Order: Ascending or Descending
-            - By: Text, Path, or Index
-        """
+        """Add toolbar to the main window."""
         self.toolBar = self.addToolBar("Tools")
         self.toolBar.setMovable(False)
 
@@ -93,72 +77,7 @@ class MainWindow(QMainWindow):
         self.saveAction.setEnabled(False)
         self.saveAction.triggered.connect(self.request_save_file.emit)
 
-        # Add seperator line on tool bar
-        self.toolBar.addSeparator()
-
-        # Add previous button on tool bar
-        self.prevAction = self.toolBar.addAction("Prev")
-        self.prevAction.setShortcut(
-            QKeySequence(Qt.Key.Key_Left)
-        )  # Set the left arrow key shortcut
-        self.prevAction.setEnabled(False)
-        self.prevAction.triggered.connect(self.request_prev_image.emit)
-
-        # Add next button on tool bar
-        self.nextAction = self.toolBar.addAction("Next")
-        self.nextAction.setShortcut(
-            QKeySequence(Qt.Key.Key_Right)
-        )  # Set the right arrow key shortcut
-        self.nextAction.setEnabled(False)
-        self.nextAction.triggered.connect(self.request_next_image.emit)
-
-        # Add seperator line on tool bar
-        self.toolBar.addSeparator()
-
-        # Add sort button menu on tool bar
-
-        # Create sort order menu
-        self.sortOrderMenu = QMenu("Order", self)
-        self.ascending_action = self.sortOrderMenu.addAction("Ascending")
-        self.descending_action = self.sortOrderMenu.addAction("Descending")
-        self.sortOrderToolButton = QToolButton()
-        self.sortOrderToolButton.setPopupMode(
-            QToolButton.ToolButtonPopupMode.InstantPopup
-        )
-        self.sortOrderToolButton.setMenu(self.sortOrderMenu)
-
-        # Create sort by menu
-        self.sortByMenu = QMenu("By", self)
-        self.text_action = self.sortByMenu.addAction("Text")
-        self.path_action = self.sortByMenu.addAction("Path")
-        self.reset_action = self.sortByMenu.addAction("Index")
-        self.sortByToolButton = QToolButton()
-        self.sortByToolButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.sortByToolButton.setMenu(self.sortByMenu)
-
-        # Create main sort menu
-        self.sortMenu = QMenu("Sort", self)
-        self.sortMenu.addMenu(self.sortOrderMenu)
-        self.sortMenu.addMenu(self.sortByMenu)
-        self.sortToolButton = QToolButton()
-        self.sortToolButton.setText("Sort")
-        self.sortToolButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.sortToolButton.setMenu(self.sortMenu)
-
-        # Add sort button on tool bar
-        self.sortAction = self.toolBar.addWidget(self.sortToolButton)
-        self.sortAction.setEnabled(False)
-
         self.addToolBar(self.toolBar)
-
-    def confirm_delete_action(self) -> None:
-        """Show a confirm dialog before deleting the item."""
-        logger.info("Launch confirm dialog to confirm image deletion")
-        confirm_dialog = ConfirmDeleteMessageBox(self)
-        result = confirm_dialog.exec()
-
-        if result == QMessageBox.StandardButton.Yes:
-            self.request_delete_item.emit()
 
     def load_file(self) -> None:
         """Get a file path with QFileDialog and load the file."""
@@ -211,9 +130,6 @@ class MainWindow(QMainWindow):
         """Enable the actions on the toolbar."""
         logger.info("Enable actions on the toolbar")
         self.saveAction.setEnabled(True)
-        self.prevAction.setEnabled(True)
-        self.nextAction.setEnabled(True)
-        self.sortAction.setEnabled(True)
 
     def eventFilter(self, obj, event):
         """Filter the event of the click event."""

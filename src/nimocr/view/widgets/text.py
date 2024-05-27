@@ -21,6 +21,7 @@ class TextWidget(QLineEdit):
     def __init__(self, text: str = "") -> None:
         # Set only font size and bold
         super().__init__()
+        self.current_text = text
         font = QFont("IBM Plex Sans Thai", 16, QFont.Weight.Bold)
         self.setFont(font)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -40,7 +41,9 @@ class TextWidget(QLineEdit):
 
     def focusOutEvent(self, event) -> None:
         """When user focus out, emit the request_change_text signal."""
-        self.request_change_text.emit(self.text())
+        if self.text() != self.current_text:
+            self.current_text = self.text()
+            self.request_change_text.emit(self.current_text)
         super().focusOutEvent(event)
 
     def disable(self) -> None:
@@ -50,6 +53,11 @@ class TextWidget(QLineEdit):
     def enable(self) -> None:
         """Enable the text widget."""
         self.setReadOnly(False)
+
+    def setText(self, text: str) -> None:
+        """Set the text in the text widget."""
+        self.current_text = text
+        super().setText(text)
 
 
 if __name__ == "__main__":
