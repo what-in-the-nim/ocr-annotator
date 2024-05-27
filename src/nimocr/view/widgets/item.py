@@ -6,17 +6,17 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
     QStyle,
-    QMessageBox,
     QVBoxLayout,
     QWidget,
 )
 
+from ..message_boxs import ConfirmDeleteMessageBox
 from .image import ImageWidget
 from .text import TextWidget
-from ..message_boxs import ConfirmDeleteMessageBox
 
 logger = logging.getLogger(__name__)
 
@@ -183,6 +183,7 @@ class ItemWidget(QWidget):
         self.rotate_button.setEnabled(True)
         self.trash_button.setEnabled(True)
         self.text_widget.enable()
+
 
 if __name__ == "__main__":
     import sys

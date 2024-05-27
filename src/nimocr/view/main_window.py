@@ -2,13 +2,7 @@ import logging
 
 from PyQt6.QtCore import QEvent, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QLineEdit,
-    QMainWindow,
-    QMenuBar,
-    QSpinBox,
-    QStatusBar,
-)
+from PyQt6.QtWidgets import QLineEdit, QMainWindow, QMenuBar, QSpinBox, QStatusBar
 
 from .dialogs import FileDialog, SaveDialog, SelectColumnDialog
 from .message_boxs import AboutMessageBox

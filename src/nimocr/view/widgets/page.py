@@ -186,7 +186,7 @@ class PageWidget(QWidget):
         # Reshape the list back into pages
         new_pages = []
         for i in range(0, len(flat_list), self.items_per_page):
-            new_pages.append(flat_list[i:i + self.items_per_page])
+            new_pages.append(flat_list[i : i + self.items_per_page])
 
         # Remove empty page if it exists at the end
         if new_pages and not new_pages[-1]:
