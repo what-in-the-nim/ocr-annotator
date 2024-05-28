@@ -77,16 +77,16 @@ class PageWidget(QWidget):
 
         # Set up previous page button.
         self.prev_page_button = QPushButton()
-        self.prev_page_button.setMinimumWidth(30)
-        self.prev_page_button.setMinimumHeight(30)
+        self.prev_page_button.setMinimumWidth(50)
+        self.prev_page_button.setMinimumHeight(50)
         icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowBack)
         self.prev_page_button.setIcon(icon)
         self.prev_page_button.clicked.connect(self.prev_page)
 
         # Set up next page button.
         self.next_page_button = QPushButton()
-        self.next_page_button.setMinimumWidth(30)
-        self.next_page_button.setMinimumHeight(30)
+        self.next_page_button.setMinimumWidth(50)
+        self.next_page_button.setMinimumHeight(50)
         icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowForward)
         self.next_page_button.setIcon(icon)
         self.next_page_button.clicked.connect(self.next_page)
@@ -95,7 +95,7 @@ class PageWidget(QWidget):
         self.page_spinbox = QSpinBox()
         self.page_spinbox.setRange(1, self.total_pages)
         self.page_spinbox.setValue(1)
-        self.page_spinbox.setMinimumWidth(50)
+        self.page_spinbox.setMinimumWidth(100)
         self.page_spinbox.setMinimumHeight(30)
         self.page_spinbox.setMaximumWidth(300)
         self.page_spinbox.setMaximumHeight(50)
