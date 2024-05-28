@@ -165,3 +165,11 @@ class AnnotatorWidget(QWidget):
         self.page_widget.enable()
         for widget in self.item_widgets:
             widget.enable()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Left:
+            self.page_widget.prev_page()
+        elif event.key() == Qt.Key.Key_Right:
+            self.page_widget.next_page()
+        else:
+            super().keyPressEvent(event)
