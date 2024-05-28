@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QLayout, QSizePolicy, QSplitter, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QLayout, QSplitter, QVBoxLayout, QWidget
 
 from .item import ItemWidget
 from .page import PageWidget
@@ -94,7 +94,6 @@ class AnnotatorWidget(QWidget):
         # Add path list widget to the left side of the splitter
         self.path_list_widget = PathListWidget()
         self.path_list_widget.setMinimumWidth(200)
-        self.path_list_widget.setMaximumWidth(500)
         self.path_list_widget.selected_index.connect(self.page_widget.go_to_index)
 
         self.splitter.addWidget(self.path_list_widget)

@@ -24,9 +24,9 @@ class PathListWidget(QListWidget):
         """Initialize the PathListWidget."""
         super().__init__()
         self.paths = paths
-        self.initUI()
+        self.init_items()
 
-    def initUI(self) -> None:
+    def init_items(self) -> None:
         """Set up the user interface."""
         if self.paths is not None:
             font = QFont("IBM Plex Sans Thai", 12)
@@ -43,7 +43,7 @@ class PathListWidget(QListWidget):
         """Set the paths to be displayed."""
         self.clear()
         self.paths = paths
-        self.initUI()
+        self.init_items()
 
     def on_item_clicked(self) -> None:
         """Emit the selected_index signal when an item is clicked."""

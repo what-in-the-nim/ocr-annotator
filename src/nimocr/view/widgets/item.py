@@ -115,6 +115,11 @@ class ItemWidget(QWidget):
         tool_layout.addStretch()
         tool_widget.setLayout(tool_layout)
 
+        # Create path label
+        self.path_label = QLabel("")
+        self.path_label.setFont(QFont("IBM Plex Sans Thai", 10))
+        item_layout.addWidget(self.path_label)
+
         image_layout.addWidget(tool_widget)
 
         # Create image and text widgets
